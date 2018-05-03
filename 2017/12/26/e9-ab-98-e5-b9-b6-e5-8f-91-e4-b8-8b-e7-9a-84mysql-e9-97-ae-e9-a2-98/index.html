@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mysql,flask," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1 mysql 重复插入问题 业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建  解决方式添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。 2 mysql set update 并发脏读问题 对一条数据进行累加时常常先使用select语句查询，然">
+<meta name="keywords" content="mysql,flask">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高并发下的mysql问题">
+<meta property="og:url" content="http://yoursite.com/2017/12/26/e9-ab-98-e5-b9-b6-e5-8f-91-e4-b8-8b-e7-9a-84mysql-e9-97-ae-e9-a2-98/index.html">
+<meta property="og:site_name" content="Dr點燃">
+<meta property="og:description" content="1 mysql 重复插入问题 业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建  解决方式添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。 2 mysql set update 并发脏读问题 对一条数据进行累加时常常先使用select语句查询，然">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-02T10:29:01.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="高并发下的mysql问题">
+<meta name="twitter:description" content="1 mysql 重复插入问题 业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建  解决方式添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。 2 mysql set update 并发脏读问题 对一条数据进行累加时常常先使用select语句查询，然">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/26/e9-ab-98-e5-b9-b6-e5-8f-91-e4-b8-8b-e7-9a-84mysql-e9-97-ae-e9-a2-98/"/>
+
+
+
+
+
+  <title>高并发下的mysql问题 | Dr點燃</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Dr點燃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/26/e9-ab-98-e5-b9-b6-e5-8f-91-e4-b8-8b-e7-9a-84mysql-e9-97-ae-e9-a2-98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">高并发下的mysql问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-26T15:27:49+08:00">
+                2017-12-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-mysql-重复插入问题"><a href="#1-mysql-重复插入问题" class="headerlink" title="1 mysql 重复插入问题"></a>1 mysql 重复插入问题</h1><blockquote>
+<p>业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建</p>
+</blockquote>
+<h4 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h4><p>添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。</p>
+<h1 id="2-mysql-set-update-并发脏读问题"><a href="#2-mysql-set-update-并发脏读问题" class="headerlink" title="2 mysql set update 并发脏读问题"></a>2 mysql set update 并发脏读问题</h1><blockquote>
+<p>对一条数据进行累加时常常先使用select语句查询，然后在查询的数值上加上一个数值，在update 更新回数据库。 这样操作在并发处理中会出现脏读问题，例如：两个进程同时处理相同一条数据，同时读取了当前的数值为200，进程1处理的比较快在2000的基础上加上了3000（2000 + 3000），更新回数据库（此时数据为5000），进程2也在原2000基础上加上了2000（2000 + 2000），也更新会数据库。最终数据库数值为4000，正确的应为2000+3000+2000=7000.</p>
+</blockquote>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>对数据加独占锁：</p>
+<p>共享锁（S）：SELECT * FROM table_name WHERE … LOCK IN SHARE MODE。</p>
+<p>排他锁（X)：SELECT * FROM table_name WHERE … FOR UPDATE。</p>
+<p>在这个问题中，我们采用排他锁对需要修改的数据加锁，这样在整个查询、修改的事务执行过程中，其他事务将无法读取数据，直到该事务处理完毕。这种操作方式为悲观锁。 将并行处理改为串行处理。</p>
+<h4 id="SQLAlchemy-的-Query-支持-select-…-for-update-share"><a href="#SQLAlchemy-的-Query-支持-select-…-for-update-share" class="headerlink" title="SQLAlchemy 的 Query 支持 select … for update / share ."></a>SQLAlchemy 的 Query 支持 select … for update / share .</h4><pre><code>session.Query(User).with_for_update().first()
+session.Query(User).with_for_update(read=True).first()
+`&lt;/pre&gt;
+
+完整形式是:
+
+&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`with_for_update(read=False, nowait=False, of=None)
+</code></pre><blockquote>
+<p>read</p>
+<p>  是标识加互斥锁还是共享锁. 当为 True 时, 即 for share 的语句, 是共享锁. 多个事务可以获取共享锁, 互斥锁只能一个事务获取. 有”多个地方”都希望是”这段时间我获取的数据不能被修改, 我也不会改”, 那么只能使用共享锁.</p>
+<p>  nowait</p>
+<p>  其它事务碰到锁, 是否不等待直接”报错”.</p>
+<p>  of</p>
+<p>  指明上锁的表, 如果不指明, 则查询中涉及的所有表(行)都会加锁.</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+            <a href="/tags/flask/" rel="tag"># flask</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/21/laravelscoutelasticsearch-e5-ae-9e-e7-8e-b0-e5-85-a8-e6-96-87-e6-90-9c-e7-b4-a2/" rel="next" title="Laravel+scout+elasticsearch实现全文搜索">
+                <i class="fa fa-chevron-left"></i> Laravel+scout+elasticsearch实现全文搜索
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/28/js-e6-97-b6-e9-97-b4-e6-a0-bc-e5-bc-8f-e5-8c-96-e4-bb-a3-e7-a0-81-e7-89-87-e6-ae-b5/" rel="prev" title="JS 时间格式化代码片段">
+                JS 时间格式化代码片段 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/lf.jpg"
+                alt="Dr點燃" />
+            
+              <p class="site-author-name" itemprop="name">Dr點燃</p>
+              <p class="site-description motion-element" itemprop="description">书山有路勤为径 学海无涯苦作舟</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/liheng666" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/lihengshou" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-globe"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:lihengshou@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-mysql-重复插入问题"><span class="nav-number">1.</span> <span class="nav-text">1 mysql 重复插入问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方式"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">解决方式</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-mysql-set-update-并发脏读问题"><span class="nav-number">2.</span> <span class="nav-text">2 mysql set update 并发脏读问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方法"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">解决方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SQLAlchemy-的-Query-支持-select-…-for-update-share"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">SQLAlchemy 的 Query 支持 select … for update / share .</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Dr點燃</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

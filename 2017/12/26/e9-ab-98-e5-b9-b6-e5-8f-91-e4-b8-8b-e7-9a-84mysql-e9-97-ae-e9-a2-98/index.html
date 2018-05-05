@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="mysql,flask," />
+  <meta name="keywords" content="flask,mysql," />
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="1 mysql 重复插入问题 业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建  解决方式添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。 2 mysql set update 并发脏读问题 对一条数据进行累加时常常先使用select语句查询，然">
-<meta name="keywords" content="mysql,flask">
+<meta name="keywords" content="flask,mysql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="高并发下的mysql问题">
 <meta property="og:url" content="http://yoursite.com/2017/12/26/e9-ab-98-e5-b9-b6-e5-8f-91-e4-b8-8b-e7-9a-84mysql-e9-97-ae-e9-a2-98/index.html">
@@ -430,9 +430,9 @@ session.Query(User).with_for_update(read=True).first()
       
         <div class="post-tags">
           
-            <a href="/tags/mysql/" rel="tag"># mysql</a>
-          
             <a href="/tags/flask/" rel="tag"># flask</a>
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
           
         </div>
       

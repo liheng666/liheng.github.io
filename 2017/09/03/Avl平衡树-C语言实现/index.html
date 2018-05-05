@@ -79,18 +79,20 @@
 
 
 
-<meta name="description" content="Avl 平衡树 实现记录Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。  需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。  实现代码123456">
+<meta name="description" content="Avl 平衡树 实现记录 Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。  需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。  实现代码12345">
 <meta name="keywords" content="AvlTree,Avl平衡树,数据结构与算法分析 从语言描述">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Avl平衡树-C语言实现">
 <meta property="og:url" content="http://yoursite.com/2017/09/03/Avl平衡树-C语言实现/index.html">
 <meta property="og:site_name" content="Dr點燃">
-<meta property="og:description" content="Avl 平衡树 实现记录Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。  需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。  实现代码123456">
+<meta property="og:description" content="Avl 平衡树 实现记录 Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。  需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。  实现代码12345">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-03T07:22:31.406Z">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4560878-e7826f024d26a1a8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
+<meta property="og:updated_time" content="2018-05-05T04:03:37.925Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Avl平衡树-C语言实现">
-<meta name="twitter:description" content="Avl 平衡树 实现记录Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。  需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。  实现代码123456">
+<meta name="twitter:description" content="Avl 平衡树 实现记录 Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。  需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。  实现代码12345">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/4560878-e7826f024d26a1a8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
 
 
 
@@ -376,7 +378,8 @@
       
 
       
-        <h3 id="Avl-平衡树-实现记录"><a href="#Avl-平衡树-实现记录" class="headerlink" title="Avl 平衡树 实现记录"></a>Avl 平衡树 实现记录</h3><p>Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。</p>
+        <h3 id="Avl-平衡树-实现记录"><a href="#Avl-平衡树-实现记录" class="headerlink" title="Avl 平衡树 实现记录"></a>Avl 平衡树 实现记录</h3><p><img src="https://upload-images.jianshu.io/upload_images/4560878-e7826f024d26a1a8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
+<p>Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。</p>
 <blockquote>
 <p>需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。</p>
 </blockquote>

@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="数据结构与算法分析 笔记 searchtree.c  #include &amp;amp;lt;stdio.h&amp;amp;gt; #include &amp;amp;lt;stdlib.h&amp;amp;gt; #define FatalError(str) fprintf(stderr, &amp;quot;%s\n&amp;quot;, str),exit(1); #define Error(str) FatalError(str)">
+<meta name="description" content="数据结构与算法分析 笔记searchtree.c12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929">
 <meta name="keywords" content="c,二叉树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="二叉树--C语言实现">
-<meta property="og:url" content="http://yoursite.com/2017/07/20/e4-ba-8c-e5-8f-89-e6-a0-91-c-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/index.html">
+<meta property="og:url" content="http://yoursite.com/2017/07/20/二叉树--C语言实现/index.html">
 <meta property="og:site_name" content="Dr點燃">
-<meta property="og:description" content="数据结构与算法分析 笔记 searchtree.c  #include &amp;amp;lt;stdio.h&amp;amp;gt; #include &amp;amp;lt;stdlib.h&amp;amp;gt; #define FatalError(str) fprintf(stderr, &amp;quot;%s\n&amp;quot;, str),exit(1); #define Error(str) FatalError(str)">
+<meta property="og:description" content="数据结构与算法分析 笔记searchtree.c12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-02T10:29:01.116Z">
+<meta property="og:updated_time" content="2018-05-05T04:22:25.289Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="二叉树--C语言实现">
-<meta name="twitter:description" content="数据结构与算法分析 笔记 searchtree.c  #include &amp;amp;lt;stdio.h&amp;amp;gt; #include &amp;amp;lt;stdlib.h&amp;amp;gt; #define FatalError(str) fprintf(stderr, &amp;quot;%s\n&amp;quot;, str),exit(1); #define Error(str) FatalError(str)">
+<meta name="twitter:description" content="数据结构与算法分析 笔记searchtree.c12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929">
 
 
 
@@ -120,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/07/20/e4-ba-8c-e5-8f-89-e6-a0-91-c-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/07/20/二叉树--C语言实现/"/>
 
 
 
@@ -161,7 +161,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <h1 class="site-subtitle" itemprop="description"></h1>
       
   </div>
 
@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/20/e4-ba-8c-e5-8f-89-e6-a0-91-c-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/20/二叉树--C语言实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Dr點燃">
@@ -304,7 +304,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">二叉树--C语言实现</h1>
+          <h2 class="post-title" itemprop="name headline">二叉树--C语言实现</h2>
         
 
         <div class="post-meta">
@@ -387,218 +387,7 @@
       
 
       
-        <h3 id="数据结构与算法分析-笔记"><a href="#数据结构与算法分析-笔记" class="headerlink" title="数据结构与算法分析 笔记"></a>数据结构与算法分析 笔记</h3><blockquote>
-<p>searchtree.c</p>
-</blockquote>
-<pre><code>#include &amp;lt;stdio.h&amp;gt;
-#include &amp;lt;stdlib.h&amp;gt;
-#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str),exit(1);
-#define Error(str) FatalError(str);
-
-struct TreeNode;
-typedef struct TreeNode *Position;
-typedef struct TreeNode *SearchTree;
-typedef int ElementType;
-
-SearchTree MakeEmpty(SearchTree T);
-Position Find(ElementType X, SearchTree T);
-Position FindMin(SearchTree);
-Position FindMax(SearchTree);
-SearchTree Insert(ElementType X, SearchTree T);
-SearchTree Delete(ElementType X, SearchTree T);
-ElementType Retrieve(Position P);
-ElementType DeleteMin(SearchTree T);
-
-struct TreeNode {
-    ElementType Element;
-    Position Left;
-    Position Right;
-};
-
-SearchTree MakeEmpty(SearchTree T)
-{
-    if(T != NULL){
-        T-&amp;gt;Element = NULL;
-        MakeEmpty(T-&amp;gt;Left);
-        MakeEmpty(T-&amp;gt;Right);
-    }
-    return NULL;
-}
-
-Position Find(ElementType X, SearchTree T)
-{
-    if(T == NULL){
-        return NULL;
-    }else
-    if(X &amp;lt; T-&amp;gt;Element){
-        return Find(X, T-&amp;gt;Left);
-    }else
-    if(X &amp;gt; T-&amp;gt;Element){
-        return Find(X, T-&amp;gt;Right);
-    }else{
-        return T;
-    }
-}
-
-Position FindMin(SearchTree T)
-{
-    if(T == NULL){
-        return NULL;
-    }else
-    if(T-&amp;gt;Left == NULL){
-        return T;
-    }else{
-        return FindMin(T-&amp;gt;Left);
-    }
-}
-
-Position FindMax(SearchTree T)
-{
-    if (T != NULL){
-        while(T-&amp;gt;Right != NULL){
-            T = T-&amp;gt;Right;
-        }
-    }
-    return T;
-}
-
-// Position FindMax(SearchTree T)
-// {
-//     if(T == NULL){
-//         return NULL;
-//     }else
-//     if(T-&amp;gt;Right == NULL){
-//         return T;
-//     }else{
-//         return FindMax(T-&amp;gt;Right);
-//     }
-// }
-
-SearchTree Insert(ElementType X, SearchTree T)
-{
-    if(T == NULL)
-    {
-        T = malloc(sizeof(struct TreeNode));
-        if( T == NULL)
-        {
-            FatalError(&quot;Out of space!!!&quot;);
-        }
-        else
-        {
-            T-&amp;gt;Element = X;
-            T-&amp;gt;Left = T-&amp;gt;Right = NULL;
-        }
-    }
-    else
-    if(X &amp;lt; T-&amp;gt;Element)
-    {
-        T-&amp;gt;Left = Insert(X, T-&amp;gt;Left);
-    }
-    else
-    if(X &amp;gt; T-&amp;gt;Element)
-        T-&amp;gt;Right = Insert(X, T-&amp;gt;Right);
-    return T;
-}
-
-ElementType Retrieve(Position P)
-{
-    return P-&amp;gt;Element;
-}
-
-SearchTree Delete(ElementType X, SearchTree T)
-{
-    Position P;
-    if(T == NULL)
-    {
-        Error(&quot;Element not found&quot;);
-    }
-    else 
-    if(X &amp;lt; T-&amp;gt;Element)
-    {
-        T = T-&amp;gt;Left;
-        return Delete(X, T);
-    }
-    else 
-    if(X &amp;gt; T-&amp;gt;Element)
-    {
-        T = T-&amp;gt;Right;
-        return Delete(X, T);
-    }
-    else
-    if(T-&amp;gt;Left &amp;amp;&amp;amp; T-&amp;gt;Right)
-    {
-        T-&amp;gt;Element = DeleteMin(T-&amp;gt;Right);
-    }
-    else
-    {
-        P = T;
-        if(T-&amp;gt;Left == NULL)
-            T = T-&amp;gt;Right;
-        else
-        if(T-&amp;gt;Right == NULL)
-            T = T-&amp;gt;Left;
-        free(P);
-    }
-    return T;
-}
-
-ElementType DeleteMin(SearchTree T)
-{
-    Position P;
-    ElementType X;
-    P = FindMin(T);
-    X = P-&amp;gt;Element;
-    free(P);
-    return X;
-}
-
-void PrintSearchTree(SearchTree T)
-{
-    if(T == NULL)
-    {
-        Error(&quot;Element not found&quot;);
-    }  
-    if(T-&amp;gt;Left == NULL &amp;amp;&amp;amp; T-&amp;gt;Right == NULL)
-    {
-        printf(&quot;%d &quot;, T-&amp;gt;Element);
-    }else{
-        if(T-&amp;gt;Left != NULL)
-        {
-            PrintSearchTree(T-&amp;gt;Left);
-        }
-        printf(&quot;%d &quot;, T-&amp;gt;Element);
-        if(T-&amp;gt;Right != NULL)
-        {
-            PrintSearchTree(T-&amp;gt;Right);
-        }
-    }
-}
-
-void SearchTreeTest()
-{
-    SearchTree T;
-    T = MakeEmpty(T);
-    T = Insert(1,T);
-    T = Insert(3,T);
-    T = Insert(2,T);
-    T = Insert(6,T);
-    T = Insert(4,T);
-    PrintSearchTree(T);
-}
-
-`&lt;/pre&gt;
-
-&gt; main.c
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`#include &quot;searchtree.c&quot;
-
-int main(void)
-{
-    SearchTreeTest();
-
-    return 0;
-}
-</code></pre>
+        <h3 id="数据结构与算法分析-笔记"><a href="#数据结构与算法分析-笔记" class="headerlink" title="数据结构与算法分析 笔记"></a>数据结构与算法分析 笔记</h3><h6 id="searchtree-c"><a href="#searchtree-c" class="headerlink" title="searchtree.c"></a>searchtree.c</h6><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FatalError(str) fprintf(stderr, <span class="meta-string">"%s\n"</span>, str),exit(1);</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> Error(str) FatalError(str);</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> *<span class="title">Position</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> *<span class="title">SearchTree</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> ElementType;</span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">MakeEmpty</span><span class="params">(SearchTree T)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">Find</span><span class="params">(ElementType X, SearchTree T)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">FindMin</span><span class="params">(SearchTree)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">FindMax</span><span class="params">(SearchTree)</span></span>;</span><br><span class="line"><span class="function">SearchTree <span class="title">Insert</span><span class="params">(ElementType X, SearchTree T)</span></span>;</span><br><span class="line"><span class="function">SearchTree <span class="title">Delete</span><span class="params">(ElementType X, SearchTree T)</span></span>;</span><br><span class="line"><span class="function">ElementType <span class="title">Retrieve</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function">ElementType <span class="title">DeleteMin</span><span class="params">(SearchTree T)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> &#123;</span></span><br><span class="line">    ElementType Element;</span><br><span class="line">    Position Left;</span><br><span class="line">    Position Right;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">MakeEmpty</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T != <span class="literal">NULL</span>)&#123;</span><br><span class="line">        T-&amp;gt;Element = <span class="literal">NULL</span>;</span><br><span class="line">        MakeEmpty(T-&amp;gt;Left);</span><br><span class="line">        MakeEmpty(T-&amp;gt;Right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">Find</span><span class="params">(ElementType X, SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;lt; T-&amp;gt;Element)&#123;</span><br><span class="line">        <span class="keyword">return</span> Find(X, T-&amp;gt;Left);</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;gt; T-&amp;gt;Element)&#123;</span><br><span class="line">        <span class="keyword">return</span> Find(X, T-&amp;gt;Right);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">FindMin</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(T-&amp;gt;Left == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> FindMin(T-&amp;gt;Left);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">FindMax</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T != <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">while</span>(T-&amp;gt;Right != <span class="literal">NULL</span>)&#123;</span><br><span class="line">            T = T-&amp;gt;Right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Position FindMax(SearchTree T)</span></span><br><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">//     if(T == NULL)&#123;</span></span><br><span class="line"><span class="comment">//         return NULL;</span></span><br><span class="line"><span class="comment">//     &#125;else</span></span><br><span class="line"><span class="comment">//     if(T-&amp;gt;Right == NULL)&#123;</span></span><br><span class="line"><span class="comment">//         return T;</span></span><br><span class="line"><span class="comment">//     &#125;else&#123;</span></span><br><span class="line"><span class="comment">//         return FindMax(T-&amp;gt;Right);</span></span><br><span class="line"><span class="comment">//     &#125;</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">Insert</span><span class="params">(ElementType X, SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        T = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct TreeNode));</span><br><span class="line">        <span class="keyword">if</span>( T == <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            FatalError(<span class="string">"Out of space!!!"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            T-&amp;gt;Element = X;</span><br><span class="line">            T-&amp;gt;Left = T-&amp;gt;Right = <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;lt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T-&amp;gt;Left = Insert(X, T-&amp;gt;Left);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;gt; T-&amp;gt;Element)</span><br><span class="line">        T-&amp;gt;Right = Insert(X, T-&amp;gt;Right);</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ElementType <span class="title">Retrieve</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> P-&amp;gt;Element;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">Delete</span><span class="params">(ElementType X, SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position P;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        Error(<span class="string">"Element not found"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    <span class="keyword">if</span>(X &amp;lt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T = T-&amp;gt;Left;</span><br><span class="line">        <span class="keyword">return</span> Delete(X, T);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    <span class="keyword">if</span>(X &amp;gt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T = T-&amp;gt;Right;</span><br><span class="line">        <span class="keyword">return</span> Delete(X, T);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(T-&amp;gt;Left &amp;amp;&amp;amp; T-&amp;gt;Right)</span><br><span class="line">    &#123;</span><br><span class="line">        T-&amp;gt;Element = DeleteMin(T-&amp;gt;Right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        P = T;</span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Left == <span class="literal">NULL</span>)</span><br><span class="line">            T = T-&amp;gt;Right;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Right == <span class="literal">NULL</span>)</span><br><span class="line">            T = T-&amp;gt;Left;</span><br><span class="line">        <span class="built_in">free</span>(P);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ElementType <span class="title">DeleteMin</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position P;</span><br><span class="line">    ElementType X;</span><br><span class="line">    P = FindMin(T);</span><br><span class="line">    X = P-&amp;gt;Element;</span><br><span class="line">    <span class="built_in">free</span>(P);</span><br><span class="line">    <span class="keyword">return</span> X;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PrintSearchTree</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        Error(<span class="string">"Element not found"</span>);</span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">if</span>(T-&amp;gt;Left == <span class="literal">NULL</span> &amp;amp;&amp;amp; T-&amp;gt;Right == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, T-&amp;gt;Element);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Left != <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            PrintSearchTree(T-&amp;gt;Left);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, T-&amp;gt;Element);</span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Right != <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            PrintSearchTree(T-&amp;gt;Right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SearchTreeTest</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    SearchTree T;</span><br><span class="line">    T = MakeEmpty(T);</span><br><span class="line">    T = Insert(<span class="number">1</span>,T);</span><br><span class="line">    T = Insert(<span class="number">3</span>,T);</span><br><span class="line">    T = Insert(<span class="number">2</span>,T);</span><br><span class="line">    T = Insert(<span class="number">6</span>,T);</span><br><span class="line">    T = Insert(<span class="number">4</span>,T);</span><br><span class="line">    PrintSearchTree(T);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">`&lt;/pre&gt;</span><br><span class="line"></span><br><span class="line">&gt; main.c</span><br><span class="line"></span><br><span class="line">&lt;pre <span class="class"><span class="keyword">class</span>="<span class="title">line</span>-<span class="title">numbers</span> <span class="title">prism</span>-<span class="title">highlight</span>" <span class="title">data</span>-<span class="title">start</span>="1"&gt;`#<span class="title">include</span> "<span class="title">searchtree</span>.<span class="title">c</span>"</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">int</span> <span class="title">main</span>(<span class="title">void</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    SearchTreeTest();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -713,7 +502,7 @@ int main(void)
                 alt="Dr點燃" />
             
               <p class="site-author-name" itemprop="name">Dr點燃</p>
-              <p class="site-description motion-element" itemprop="description">书山有路勤为径 学海无涯苦作舟</p>
+              <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
           <nav class="site-state motion-element">
@@ -784,6 +573,24 @@ int main(void)
 
           
           
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://liheng.info/" title="Dr點燃" target="_blank">Dr點燃</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.jankl.com" title="小艾同学" target="_blank">小艾同学</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
 
           
 
@@ -800,7 +607,7 @@ int main(void)
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构与算法分析-笔记"><span class="nav-number">1.</span> <span class="nav-text">数据结构与算法分析 笔记</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构与算法分析-笔记"><span class="nav-number">1.</span> <span class="nav-text">数据结构与算法分析 笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#searchtree-c"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">searchtree.c</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -820,7 +627,7 @@ int main(void)
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

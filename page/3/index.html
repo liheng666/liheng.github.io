@@ -158,7 +158,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <h1 class="site-subtitle" itemprop="description"></h1>
       
   </div>
 
@@ -284,6 +284,320 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/02/e5-8d-95-e9-93-be-e8-a1-a8-e7-ac-94-e8-ae-b0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/02/e5-8d-95-e9-93-be-e8-a1-a8-e7-ac-94-e8-ae-b0/" itemprop="url">单链表笔记</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-02T23:27:02+08:00">
+                2017-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>list.c</p>
+<pre><code>#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;stdlib.h&amp;gt;
+#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str),exit(1);
+
+typedef int ElementType;
+#ifndef _list_H
+struct Node;
+typedef struct Node *PtrToNode;
+typedef PtrToNode List;
+typedef PtrToNode Position;
+
+List MakeEmpty(List L);
+int IsEmpty(List L);
+int IsLast(Position P, List L);
+Position Find(ElementType X, List L);
+void Delete(ElementType X, List L);
+Position FindPrevious(ElementType X, List L);
+void Insert(ElementType X, List L, Position P);
+void DeleteList(List L);
+Position Header(List L);
+Position First(List L);
+Position Advance(Position P);
+ElementType Retrieve(Position P);
+
+#endif
+
+struct Node {
+    ElementType Element;
+    Position Next;
+};
+
+List MakeEmpty(List L)
+{
+    if (L != NULL){
+        DeleteList(L);
+    }
+    L = malloc(sizeof(struct Node));
+    if(L == NULL){
+        FatalError(&quot;Out of space!!!&quot;);
+    }
+    L-&amp;gt;Next = NULL;
+    return L;
+}
+
+// 测试链表是否是空链表
+int IsEmpty(List L)
+{
+    return L-&amp;gt;Next == NULL;
+}
+
+// 检测当前位置是否是链表的末尾
+int IsLast(Position P, List L)
+{
+    return P-&amp;gt;Next == NULL;
+}
+
+// 查找链表中第一次出现X的位置
+Position Find(ElementType X, List L)
+{
+    Position P;
+
+    P = L-&amp;gt;Next;
+    while(P != NULL &amp;amp;&amp;amp; P-&amp;gt;Element != X){
+        P = P-&amp;gt;Next;
+    }
+
+    return P;
+}
+
+Position FindPrevious(ElementType X, List L)
+{
+    Position P;
+    P = L;
+    while(P-&amp;gt;Next != NULL &amp;amp;&amp;amp; P-&amp;gt;Next-&amp;gt;Element != X){
+        P = P-&amp;gt;Next;
+    }
+    return P;
+}
+
+void Delete(ElementType X, List L){
+    Position P, TmpCell;
+
+    P = FindPrevious(X, L);
+    if(!IsLast(P, L)){
+        TmpCell = P-&amp;gt;Next;
+        P-&amp;gt;Next = TmpCell-&amp;gt;Next;
+        free(TmpCell);
+    }
+}
+
+void Insert(ElementType X, List L, Position P)
+{
+    Position TmpCell;
+    TmpCell = malloc(sizeof(struct Node));
+    if(TmpCell == NULL){
+        FatalError(&quot;Out of space!!!&quot;);
+    }
+    TmpCell-&amp;gt;Element = X;
+    TmpCell-&amp;gt;Next = P-&amp;gt;Next;
+    P-&amp;gt;Next = TmpCell;
+}
+
+void DeleteList(List L)
+{
+    Position P, TmpCell;
+
+    P = L-&amp;gt;Next;
+    L-&amp;gt;Next = NULL;
+    while(P != NULL){
+        TmpCell = P-&amp;gt;Next;
+        free(P);
+        P = TmpCell;
+    }
+}
+
+Position Header(List L)
+{
+    return L;
+}
+
+Position First(List L)
+{
+    return L-&amp;gt;Next;
+}
+
+Position Advance(Position P)
+{
+    return P-&amp;gt;Next;
+}
+
+ElementType Retrieve(Position P)
+{
+    return P-&amp;gt;Element;
+}
+
+void PrintList(List L)
+{
+    Position P = Header(L);
+
+    if(IsEmpty(L)){
+        FatalError(&quot;Empty List\n&quot;);
+    }else{
+        do{
+            P = Advance(P);
+            printf(&quot;%d &quot;, P-&amp;gt;Element);
+        }while(!IsLast(P, L));
+    }
+    printf(&quot;\n&quot;);
+}
+`&lt;/pre&gt;
+
+main.c
+
+&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`#include &quot;list.c&quot;
+
+int main()
+{
+    List L;
+    Position P;
+    L = MakeEmpty(NULL);
+    P = Header(L);
+    Insert(1, L, P);
+    PrintList(L);
+    P = Advance(P);
+    Insert(2, L, P);
+    PrintList(L);
+    Delete(1, L);
+    PrintList(L);
+    DeleteList(L);
+    PrintList(L);
+    return 0;
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/26/e8-ae-b0-e4-b8-80-e6-ac-a1-e4-bd-bf-e7-94-a8-e4-b8-83-e7-89-9b-e8-8e-b7-e5-8f-96token-e7-9a-84-e9-94-99-e8-af-af/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -301,9 +615,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/26/e8-ae-b0-e4-b8-80-e6-ac-a1-e4-bd-bf-e7-94-a8-e4-b8-83-e7-89-9b-e8-8e-b7-e5-8f-96token-e7-9a-84-e9-94-99-e8-af-af/" itemprop="url">记一次使用七牛获取token的错误</a></h1>
+                <a class="post-title-link" href="/2017/06/26/e8-ae-b0-e4-b8-80-e6-ac-a1-e4-bd-bf-e7-94-a8-e4-b8-83-e7-89-9b-e8-8e-b7-e5-8f-96token-e7-9a-84-e9-94-99-e8-af-af/" itemprop="url">记一次使用七牛获取token的错误</a></h2>
         
 
         <div class="post-meta">
@@ -446,9 +760,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/25/mac-brew-e5-b8-b8-e7-94-a8-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" itemprop="url">mac brew常用使用方法</a></h1>
+                <a class="post-title-link" href="/2017/06/25/mac-brew-e5-b8-b8-e7-94-a8-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" itemprop="url">mac brew常用使用方法</a></h2>
         
 
         <div class="post-meta">
@@ -594,9 +908,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/19/c语言-判断两个文件是否一致/" itemprop="url">【c语言】判断两个文件是否一致</a></h1>
+                <a class="post-title-link" href="/2017/06/19/c语言-判断两个文件是否一致/" itemprop="url">【c语言】判断两个文件是否一致</a></h2>
         
 
         <div class="post-meta">
@@ -719,7 +1033,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/18/e3-80-90mysql-e3-80-91-order-by-case-when-e7-9a-84-e7-94-a8-e6-b3-95/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/18/order by case when 的用法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Dr點燃">
@@ -736,9 +1050,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/06/18/e3-80-90mysql-e3-80-91-order-by-case-when-e7-9a-84-e7-94-a8-e6-b3-95/" itemprop="url">【mysql】 order by case when 的用法</a></h1>
+                <a class="post-title-link" href="/2017/06/18/order by case when 的用法/" itemprop="url">【mysql】 order by case when 的用法</a></h2>
         
 
         <div class="post-meta">
@@ -848,388 +1162,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/17/laravel-e6-9c-8d-e5-8a-a1-e5-ae-b9-e5-99-a8-e5-ae-9e-e7-8e-b0-e5-8e-9f-e7-90-86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Dr點燃">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/lf.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Dr點燃">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/17/laravel-e6-9c-8d-e5-8a-a1-e5-ae-b9-e5-99-a8-e5-ae-9e-e7-8e-b0-e5-8e-9f-e7-90-86/" itemprop="url">Laravel 服务容器实现原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-17T16:50:39+08:00">
-                2017-06-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Laravel/" itemprop="url" rel="index">
-                    <span itemprop="name">Laravel</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>[toc]</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通过实现laravel 框架功能，以便深入理解laravel框架的先进思想。</p>
-<h4 id="什么是服务容器"><a href="#什么是服务容器" class="headerlink" title="什么是服务容器"></a>什么是服务容器</h4><blockquote>
-<p>服务容器是用来管理类依赖与运行依赖注入的工具。Laravel框架中就是使用服务容器来实现 <strong>控制反转</strong>和<strong>依赖注入</strong>。</p>
-</blockquote>
-<h4 id="什么是控制反转（IoC）和依赖注入（DI）"><a href="#什么是控制反转（IoC）和依赖注入（DI）" class="headerlink" title="什么是控制反转（IoC）和依赖注入（DI）"></a>什么是控制反转（IoC）和依赖注入（DI）</h4><blockquote>
-<p>控制反转(IoC) 就是说把创建对象的<strong>控制权</strong>进行转移，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，也就是 <strong>Laravel</strong> 中的容器。</p>
-<p>  依赖注入（DI）则是帮助容器实现在运行中动态的为对象提供提依赖的资源。</p>
-</blockquote>
-<p>概念容易不太容易让人理解，举个栗子：</p>
-<pre><code>//我们构建一个人的类和一个狗的类
- class People
-{
-    public $dog = null;
-
-    public function __construct()
-    {
-        $this-&amp;gt;dog = new Dog();
-    }
-
-    public function putDog(){
-        return $this-&amp;gt;dog-&amp;gt;dogCall();
-    }
-
-}
-
-class Dog{
-    public function dogCall(){
-        return &apos;汪汪汪&apos;;
-    }
-}
-`&lt;/pre&gt;
-
-这个人在遛狗，突然遇到了死对头，他于是放狗咬人
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`$people = new People();
-$people-&amp;gt;putDog();
-`&lt;/pre&gt;
-
-在这个操作中，people类要执行`putDog()`这个方法，需要依赖Dog类，一般我们像上面一样，在people中利用构造函数来添加这个Dog依赖。如果使用控制反转 依赖注入则是这个样子
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`class People
-{
-    public $dog = null;
-
-    public function __construct(Dog $dog)
-    {
-        $this-&amp;gt;dog = $dog;
-    }
-
-    public function putDog(){
-        return $this-&amp;gt;dog-&amp;gt;dogCall();
-    }
-
-}
-`&lt;/pre&gt;
-
-People类通过构造参数声明自己需要的 依赖类，由容器自动注入。这样就实现了程序的有效解耦，好处在这就不多说了。
-
-## Laravel容器依赖注入的实现
-
-###### 实现原理需要了解的知识点：
-
-&gt; 闭包（匿名函数）：
-</code></pre><blockquote>
-<pre><code>匿名函数（Anonymous functions），也叫闭包函数（closures），允许 临时创建一个没有指定名称的函数
-
-反射：PHP 5 以上版本具有完整的反射 API，添加了对类、接口、函数、方法和扩展进行反向工程的能力。 此外，反射 API 提供了方法来取出函数、类和方法中的文档注释
-</code></pre></blockquote>
-<pre><code>###### 理解了闭包和反射的基本用法我们来看Laravel中是怎么实现容器的，下面代码是我对laravel框架容器部分代码的简化核心版：
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`class Containerc
-{
-    /**
-     *  容器绑定，用来装提供的实例或者 提供实例的回调函数
-     * @var array
-     */
-    public $building = [];
-
-    /**
-     * 注册一个绑定到容器
-     */
-    public function bind($abstract, $concrete = null, $shared = false)
-    {
-        if(is_null($concrete)){
-            $concrete = $abstract;
-        }
-
-        if(!$concrete instanceOf Closure){
-            $concrete = $this-&amp;gt;getClosure($abstract, $concrete);
-        }
-
-        $this-&amp;gt;building[$abstract] =  compact(&quot;concrete&quot;, &quot;shared&quot;);
-    }
-
-    //注册一个共享的绑定 单例
-    public function singleton($abstract, $concrete, $shared = true){
-        $this-&amp;gt;bind($abstract, $concrete, $shared);
-    }
-
-    /**
-     * 默认生成实例的回调闭包
-     *
-     * @param $abstract
-     * @param $concrete
-     * @return Closure
-     */
-    public function getClosure($abstract, $concrete)
-    {
-        return function($c) use($abstract, $concrete){
-            $method = ($abstract == $concrete)? &apos;build&apos; : &apos;make&apos;;
-
-            return $c-&amp;gt;$method($concrete);
-        };
-    }
-
-    /**
-     * 生成实例 
-     */
-    public function make($abstract)
-    {
-        $concrete = $this-&amp;gt;getConcrete($abstract);
-
-        if($this-&amp;gt;isBuildable($concrete, $abstract)){
-            $object = $this-&amp;gt;build($concrete);
-        }else{
-            $object = $this-&amp;gt;make($concrete);
-        }
-
-        return $object;
-    }
-
-    /**
-     * 获取绑定的回调函数
-     */
-    public function getConcrete($abstract)
-    {
-        if(! isset($this-&amp;gt;building[$abstract])){
-            return $abstract;
-        }
-
-        return $this-&amp;gt;building[$abstract][&apos;concrete&apos;];
-    }
-
-    /**
-     * 判断 是否 可以创建服务实体
-     */
-    public function isBuildable($concrete, $abstract)
-    {
-        return $concrete === $abstract || $concrete instanceof Closure;
-    }
-
-    /**
-     * 根据实例具体名称实例具体对象
-     */
-    public function build($concrete)
-    {
-        if($concrete instanceof Closure){
-            return $concrete($this);
-        }
-
-        //创建反射对象
-        $reflector = new ReflectionClass($concrete);
-
-        if( ! $reflector-&amp;gt;isInstantiable()){
-            //抛出异常
-            throw new \Exception(&apos;无法实例化&apos;);
-        }
-
-        $constructor = $reflector-&amp;gt;getConstructor();
-        if(is_null($constructor)){
-            return new $concrete;
-        }
-
-        $dependencies = $constructor-&amp;gt;getParameters();
-        $instance = $this-&amp;gt;getDependencies($dependencies);
-
-        return $reflector-&amp;gt;newInstanceArgs($instance);
-
-    }
-
-    //通过反射解决参数依赖
-    public function getDependencies(array $dependencies)
-    {
-        $results = [];
-        foreach( $dependencies as $dependency ){
-            $results[] = is_null($dependency-&amp;gt;getClass())
-                ?$this-&amp;gt;resolvedNonClass($dependency)
-                :$this-&amp;gt;resolvedClass($dependency);
-        }
-
-        return $results;
-    }
-
-    //解决一个没有类型提示依赖
-    public function resolvedNonClass(ReflectionParameter $parameter)
-    {
-        if($parameter-&amp;gt;isDefaultValueAvailable()){
-            return $parameter-&amp;gt;getDefaultValue();
-        }
-        throw new \Exception(&apos;出错&apos;);
-
-    }
-
-    //通过容器解决依赖
-    public function resolvedClass(ReflectionParameter $parameter)
-    {
-        return $this-&amp;gt;make($parameter-&amp;gt;getClass()-&amp;gt;name);
-
-    }
-
-}
-`&lt;/pre&gt;
-
-#### 容器的工作流程
-
-接着上面遛狗的例子：
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`//实例化容器类
-$app =  new Container();
-//向容器中填充Dog
-$app-&amp;gt;bind(&apos;Dog&apos;,&apos;App\Dog&apos;);
-//填充People
-$app-&amp;gt;bind(&apos;People&apos;, &apos;App\People&apos;);
-//通过容器实现依赖注入，完成类的实例化；
-$people = $app-&amp;gt;make(&apos;People&apos;);
-//调用方法
-echo $people-&amp;gt;putDog();
-`&lt;/pre&gt;
-
-上面示例中我们先实例化容器类，然后使用`bind()`方法 绑定接口和 生成相应的实例的闭包函数。然后使用`make()` 函数生成实例对象，在`make()`中会调用 `isBuildable($concrete, $abstract)` 来判断 给定的服务实体（`$concrete`参数）是否可以创建，可以创建 就会调用 `build($concrete)` 函数 ，`build($concrete)` 函数会判断传的参数是 是** 闭包 **还是** 具体类名 **，如果是闭包则直接运行，如果是具体类名的话，则通过反射获取该类的构造函数所需的依赖，完成实例化。
-
-**重点理解 下面这几个函数中 反射的用法，应该就很好理解了**
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`build($concrete)
-getDependencies(array $dependencies)
-resolvedNonClass(ReflectionParameter $parameter)
-resolvedClass(ReflectionParameter $parameter)
-</code></pre><h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><blockquote>
-<p>IoC 理解起来是有点难度，可能文中描述让你感觉不是很清楚，可以将文中代码 在php中用debug观察 运行状态。<br>  理解了容器的具体实现原理，再去看Laravel中的相关实现，就会感觉豁然开朗。</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1274,7 +1206,7 @@ resolvedClass(ReflectionParameter $parameter)
                 alt="Dr點燃" />
             
               <p class="site-author-name" itemprop="name">Dr點燃</p>
-              <p class="site-description motion-element" itemprop="description">书山有路勤为径 学海无涯苦作舟</p>
+              <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
           <nav class="site-state motion-element">
@@ -1345,6 +1277,24 @@ resolvedClass(ReflectionParameter $parameter)
 
           
           
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://liheng.info/" title="Dr點燃" target="_blank">Dr點燃</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.jankl.com" title="小艾同学" target="_blank">小艾同学</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
 
           
 
@@ -1365,7 +1315,7 @@ resolvedClass(ReflectionParameter $parameter)
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

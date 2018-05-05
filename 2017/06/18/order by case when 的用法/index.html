@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="php,Laravel," />
+  <meta name="keywords" content="mysql," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="[toc] 前言通过实现laravel 框架功能，以便深入理解laravel框架的先进思想。 什么是服务容器 服务容器是用来管理类依赖与运行依赖注入的工具。Laravel框架中就是使用服务容器来实现 控制反转和依赖注入。  什么是控制反转（IoC）和依赖注入（DI） 控制反转(IoC) 就是说把创建对象的控制权进行转移，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，也就">
-<meta name="keywords" content="php,Laravel">
+<meta name="description" content="select * from table order by case field when field=2 then 1 else 0 end, field desc; 【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；">
+<meta name="keywords" content="mysql">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Laravel 服务容器实现原理">
-<meta property="og:url" content="http://yoursite.com/2017/06/17/laravel-e6-9c-8d-e5-8a-a1-e5-ae-b9-e5-99-a8-e5-ae-9e-e7-8e-b0-e5-8e-9f-e7-90-86/index.html">
+<meta property="og:title" content="【mysql】 order by case when 的用法">
+<meta property="og:url" content="http://yoursite.com/2017/06/18/order by case when 的用法/index.html">
 <meta property="og:site_name" content="Dr點燃">
-<meta property="og:description" content="[toc] 前言通过实现laravel 框架功能，以便深入理解laravel框架的先进思想。 什么是服务容器 服务容器是用来管理类依赖与运行依赖注入的工具。Laravel框架中就是使用服务容器来实现 控制反转和依赖注入。  什么是控制反转（IoC）和依赖注入（DI） 控制反转(IoC) 就是说把创建对象的控制权进行转移，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，也就">
+<meta property="og:description" content="select * from table order by case field when field=2 then 1 else 0 end, field desc; 【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-02T10:29:01.113Z">
+<meta property="og:updated_time" content="2018-05-05T04:20:54.445Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Laravel 服务容器实现原理">
-<meta name="twitter:description" content="[toc] 前言通过实现laravel 框架功能，以便深入理解laravel框架的先进思想。 什么是服务容器 服务容器是用来管理类依赖与运行依赖注入的工具。Laravel框架中就是使用服务容器来实现 控制反转和依赖注入。  什么是控制反转（IoC）和依赖注入（DI） 控制反转(IoC) 就是说把创建对象的控制权进行转移，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，也就">
+<meta name="twitter:title" content="【mysql】 order by case when 的用法">
+<meta name="twitter:description" content="select * from table order by case field when field=2 then 1 else 0 end, field desc; 【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/06/17/laravel-e6-9c-8d-e5-8a-a1-e5-ae-b9-e5-99-a8-e5-ae-9e-e7-8e-b0-e5-8e-9f-e7-90-86/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/06/18/order by case when 的用法/"/>
 
 
 
 
 
-  <title>Laravel 服务容器实现原理 | Dr點燃</title>
+  <title>【mysql】 order by case when 的用法 | Dr點燃</title>
   
 
 
@@ -161,7 +161,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <h1 class="site-subtitle" itemprop="description"></h1>
       
   </div>
 
@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/17/laravel-e6-9c-8d-e5-8a-a1-e5-ae-b9-e5-99-a8-e5-ae-9e-e7-8e-b0-e5-8e-9f-e7-90-86/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/18/order by case when 的用法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Dr點燃">
@@ -304,7 +304,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Laravel 服务容器实现原理</h1>
+          <h2 class="post-title" itemprop="name headline">【mysql】 order by case when 的用法</h2>
         
 
         <div class="post-meta">
@@ -316,8 +316,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-17T16:50:39+08:00">
-                2017-06-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-18T13:24:21+08:00">
+                2017-06-18
               </time>
             
 
@@ -339,8 +339,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Laravel/" itemprop="url" rel="index">
-                    <span itemprop="name">Laravel</span>
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
                   </a>
                 </span>
 
@@ -376,248 +376,8 @@
       
 
       
-        <p>[toc]</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通过实现laravel 框架功能，以便深入理解laravel框架的先进思想。</p>
-<h4 id="什么是服务容器"><a href="#什么是服务容器" class="headerlink" title="什么是服务容器"></a>什么是服务容器</h4><blockquote>
-<p>服务容器是用来管理类依赖与运行依赖注入的工具。Laravel框架中就是使用服务容器来实现 <strong>控制反转</strong>和<strong>依赖注入</strong>。</p>
-</blockquote>
-<h4 id="什么是控制反转（IoC）和依赖注入（DI）"><a href="#什么是控制反转（IoC）和依赖注入（DI）" class="headerlink" title="什么是控制反转（IoC）和依赖注入（DI）"></a>什么是控制反转（IoC）和依赖注入（DI）</h4><blockquote>
-<p>控制反转(IoC) 就是说把创建对象的<strong>控制权</strong>进行转移，以前创建对象的主动权和创建时机是由自己把控的，而现在这种权力转移到第三方，也就是 <strong>Laravel</strong> 中的容器。</p>
-<p>  依赖注入（DI）则是帮助容器实现在运行中动态的为对象提供提依赖的资源。</p>
-</blockquote>
-<p>概念容易不太容易让人理解，举个栗子：</p>
-<pre><code>//我们构建一个人的类和一个狗的类
- class People
-{
-    public $dog = null;
-
-    public function __construct()
-    {
-        $this-&amp;gt;dog = new Dog();
-    }
-
-    public function putDog(){
-        return $this-&amp;gt;dog-&amp;gt;dogCall();
-    }
-
-}
-
-class Dog{
-    public function dogCall(){
-        return &apos;汪汪汪&apos;;
-    }
-}
-`&lt;/pre&gt;
-
-这个人在遛狗，突然遇到了死对头，他于是放狗咬人
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`$people = new People();
-$people-&amp;gt;putDog();
-`&lt;/pre&gt;
-
-在这个操作中，people类要执行`putDog()`这个方法，需要依赖Dog类，一般我们像上面一样，在people中利用构造函数来添加这个Dog依赖。如果使用控制反转 依赖注入则是这个样子
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`class People
-{
-    public $dog = null;
-
-    public function __construct(Dog $dog)
-    {
-        $this-&amp;gt;dog = $dog;
-    }
-
-    public function putDog(){
-        return $this-&amp;gt;dog-&amp;gt;dogCall();
-    }
-
-}
-`&lt;/pre&gt;
-
-People类通过构造参数声明自己需要的 依赖类，由容器自动注入。这样就实现了程序的有效解耦，好处在这就不多说了。
-
-## Laravel容器依赖注入的实现
-
-###### 实现原理需要了解的知识点：
-
-&gt; 闭包（匿名函数）：
-</code></pre><blockquote>
-<pre><code>匿名函数（Anonymous functions），也叫闭包函数（closures），允许 临时创建一个没有指定名称的函数
-
-反射：PHP 5 以上版本具有完整的反射 API，添加了对类、接口、函数、方法和扩展进行反向工程的能力。 此外，反射 API 提供了方法来取出函数、类和方法中的文档注释
-</code></pre></blockquote>
-<pre><code>###### 理解了闭包和反射的基本用法我们来看Laravel中是怎么实现容器的，下面代码是我对laravel框架容器部分代码的简化核心版：
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`class Containerc
-{
-    /**
-     *  容器绑定，用来装提供的实例或者 提供实例的回调函数
-     * @var array
-     */
-    public $building = [];
-
-    /**
-     * 注册一个绑定到容器
-     */
-    public function bind($abstract, $concrete = null, $shared = false)
-    {
-        if(is_null($concrete)){
-            $concrete = $abstract;
-        }
-
-        if(!$concrete instanceOf Closure){
-            $concrete = $this-&amp;gt;getClosure($abstract, $concrete);
-        }
-
-        $this-&amp;gt;building[$abstract] =  compact(&quot;concrete&quot;, &quot;shared&quot;);
-    }
-
-    //注册一个共享的绑定 单例
-    public function singleton($abstract, $concrete, $shared = true){
-        $this-&amp;gt;bind($abstract, $concrete, $shared);
-    }
-
-    /**
-     * 默认生成实例的回调闭包
-     *
-     * @param $abstract
-     * @param $concrete
-     * @return Closure
-     */
-    public function getClosure($abstract, $concrete)
-    {
-        return function($c) use($abstract, $concrete){
-            $method = ($abstract == $concrete)? &apos;build&apos; : &apos;make&apos;;
-
-            return $c-&amp;gt;$method($concrete);
-        };
-    }
-
-    /**
-     * 生成实例 
-     */
-    public function make($abstract)
-    {
-        $concrete = $this-&amp;gt;getConcrete($abstract);
-
-        if($this-&amp;gt;isBuildable($concrete, $abstract)){
-            $object = $this-&amp;gt;build($concrete);
-        }else{
-            $object = $this-&amp;gt;make($concrete);
-        }
-
-        return $object;
-    }
-
-    /**
-     * 获取绑定的回调函数
-     */
-    public function getConcrete($abstract)
-    {
-        if(! isset($this-&amp;gt;building[$abstract])){
-            return $abstract;
-        }
-
-        return $this-&amp;gt;building[$abstract][&apos;concrete&apos;];
-    }
-
-    /**
-     * 判断 是否 可以创建服务实体
-     */
-    public function isBuildable($concrete, $abstract)
-    {
-        return $concrete === $abstract || $concrete instanceof Closure;
-    }
-
-    /**
-     * 根据实例具体名称实例具体对象
-     */
-    public function build($concrete)
-    {
-        if($concrete instanceof Closure){
-            return $concrete($this);
-        }
-
-        //创建反射对象
-        $reflector = new ReflectionClass($concrete);
-
-        if( ! $reflector-&amp;gt;isInstantiable()){
-            //抛出异常
-            throw new \Exception(&apos;无法实例化&apos;);
-        }
-
-        $constructor = $reflector-&amp;gt;getConstructor();
-        if(is_null($constructor)){
-            return new $concrete;
-        }
-
-        $dependencies = $constructor-&amp;gt;getParameters();
-        $instance = $this-&amp;gt;getDependencies($dependencies);
-
-        return $reflector-&amp;gt;newInstanceArgs($instance);
-
-    }
-
-    //通过反射解决参数依赖
-    public function getDependencies(array $dependencies)
-    {
-        $results = [];
-        foreach( $dependencies as $dependency ){
-            $results[] = is_null($dependency-&amp;gt;getClass())
-                ?$this-&amp;gt;resolvedNonClass($dependency)
-                :$this-&amp;gt;resolvedClass($dependency);
-        }
-
-        return $results;
-    }
-
-    //解决一个没有类型提示依赖
-    public function resolvedNonClass(ReflectionParameter $parameter)
-    {
-        if($parameter-&amp;gt;isDefaultValueAvailable()){
-            return $parameter-&amp;gt;getDefaultValue();
-        }
-        throw new \Exception(&apos;出错&apos;);
-
-    }
-
-    //通过容器解决依赖
-    public function resolvedClass(ReflectionParameter $parameter)
-    {
-        return $this-&amp;gt;make($parameter-&amp;gt;getClass()-&amp;gt;name);
-
-    }
-
-}
-`&lt;/pre&gt;
-
-#### 容器的工作流程
-
-接着上面遛狗的例子：
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`//实例化容器类
-$app =  new Container();
-//向容器中填充Dog
-$app-&amp;gt;bind(&apos;Dog&apos;,&apos;App\Dog&apos;);
-//填充People
-$app-&amp;gt;bind(&apos;People&apos;, &apos;App\People&apos;);
-//通过容器实现依赖注入，完成类的实例化；
-$people = $app-&amp;gt;make(&apos;People&apos;);
-//调用方法
-echo $people-&amp;gt;putDog();
-`&lt;/pre&gt;
-
-上面示例中我们先实例化容器类，然后使用`bind()`方法 绑定接口和 生成相应的实例的闭包函数。然后使用`make()` 函数生成实例对象，在`make()`中会调用 `isBuildable($concrete, $abstract)` 来判断 给定的服务实体（`$concrete`参数）是否可以创建，可以创建 就会调用 `build($concrete)` 函数 ，`build($concrete)` 函数会判断传的参数是 是** 闭包 **还是** 具体类名 **，如果是闭包则直接运行，如果是具体类名的话，则通过反射获取该类的构造函数所需的依赖，完成实例化。
-
-**重点理解 下面这几个函数中 反射的用法，应该就很好理解了**
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`build($concrete)
-getDependencies(array $dependencies)
-resolvedNonClass(ReflectionParameter $parameter)
-resolvedClass(ReflectionParameter $parameter)
-</code></pre><h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><blockquote>
-<p>IoC 理解起来是有点难度，可能文中描述让你感觉不是很清楚，可以将文中代码 在php中用debug观察 运行状态。<br>  理解了容器的具体实现原理，再去看Laravel中的相关实现，就会感觉豁然开朗。</p>
-</blockquote>
-
+        <pre><code>select * from table order by case field when field=2 then 1 else 0 end, field desc;
+</code></pre><h3 id="【解释】查询时，当某条数据中的字段field-的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；"><a href="#【解释】查询时，当某条数据中的字段field-的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；" class="headerlink" title="【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；"></a>【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；</h3>
       
     </div>
     
@@ -634,9 +394,7 @@ resolvedClass(ReflectionParameter $parameter)
       
         <div class="post-tags">
           
-            <a href="/tags/php/" rel="tag"># php</a>
-          
-            <a href="/tags/Laravel/" rel="tag"># Laravel</a>
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
           
         </div>
       
@@ -649,14 +407,18 @@ resolvedClass(ReflectionParameter $parameter)
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2017/06/17/Laravel服务容器实现原理/" rel="next" title="Laravel服务容器实现原理">
+                <i class="fa fa-chevron-left"></i> Laravel服务容器实现原理
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/06/18/e3-80-90mysql-e3-80-91-order-by-case-when-e7-9a-84-e7-94-a8-e6-b3-95/" rel="prev" title="【mysql】 order by case when 的用法">
-                【mysql】 order by case when 的用法 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/06/19/c语言-判断两个文件是否一致/" rel="prev" title="【c语言】判断两个文件是否一致">
+                【c语言】判断两个文件是否一致 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -728,7 +490,7 @@ resolvedClass(ReflectionParameter $parameter)
                 alt="Dr點燃" />
             
               <p class="site-author-name" itemprop="name">Dr點燃</p>
-              <p class="site-description motion-element" itemprop="description">书山有路勤为径 学海无涯苦作舟</p>
+              <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
           <nav class="site-state motion-element">
@@ -799,6 +561,24 @@ resolvedClass(ReflectionParameter $parameter)
 
           
           
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://liheng.info/" title="Dr點燃" target="_blank">Dr點燃</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.jankl.com" title="小艾同学" target="_blank">小艾同学</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
 
           
 
@@ -815,7 +595,7 @@ resolvedClass(ReflectionParameter $parameter)
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是服务容器"><span class="nav-number">1.0.1.</span> <span class="nav-text">什么是服务容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是控制反转（IoC）和依赖注入（DI）"><span class="nav-number">1.0.2.</span> <span class="nav-text">什么是控制反转（IoC）和依赖注入（DI）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后"><span class="nav-number">2.</span> <span class="nav-text">最后</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#【解释】查询时，当某条数据中的字段field-的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；"><span class="nav-number">1.</span> <span class="nav-text">【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；</span></a></li></ol></div>
             
 
           </div>
@@ -835,7 +615,7 @@ resolvedClass(ReflectionParameter $parameter)
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

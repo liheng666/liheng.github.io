@@ -147,9 +147,9 @@
       
         <tags>
             
-            <tag> mysql </tag>
-            
             <tag> flask </tag>
+            
+            <tag> mysql </tag>
             
         </tags>
       
@@ -239,9 +239,9 @@
       
         <tags>
             
-            <tag> c </tag>
-            
             <tag> 数据结构与算法分析 从语言描述 </tag>
+            
+            <tag> c </tag>
             
             <tag> 排序 </tag>
             

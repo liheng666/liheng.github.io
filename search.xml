@@ -3,6 +3,31 @@
   
     
     <entry>
+      <title>libreoffice把文档转换成PDF</title>
+      <link href="/2018/11/14/libreoffice%E6%8A%8A%E6%96%87%E6%A1%A3%E8%BD%AC%E6%8D%A2%E6%88%90PDF/"/>
+      <url>/2018/11/14/libreoffice%E6%8A%8A%E6%96%87%E6%A1%A3%E8%BD%AC%E6%8D%A2%E6%88%90PDF/</url>
+      <content type="html"><![CDATA[<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install libreoffice</span><br><span class="line">yum install libreoffice-headless</span><br></pre></td></tr></table></figure><h3 id="php-fpm-调用"><a href="#php-fpm-调用" class="headerlink" title="php-fpm 调用"></a>php-fpm 调用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// $path 目标路径、name_fix 源文件路径</span><br><span class="line"> $shell_str = &quot;export HOME=/tmp/ &amp;&amp; /usr/bin/libreoffice  --invisible --convert-to pdf --outdir $path $name_fix&quot;;</span><br><span class="line"> $result_str = exec($shell_str, $output, $return_var);</span><br></pre></td></tr></table></figure><h3 id="可能出现转PDF之后-中文出现编程小方框"><a href="#可能出现转PDF之后-中文出现编程小方框" class="headerlink" title="可能出现转PDF之后 中文出现编程小方框"></a>可能出现转PDF之后 中文出现编程小方框</h3><p>拷贝中文常用字体放入 linux系统字体中</p>]]></content>
+      
+      <categories>
+          
+          <category> -php </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> php </tag>
+            
+            <tag> linux </tag>
+            
+            <tag> libreoffice </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>go 协程池实现</title>
       <link href="/2018/04/02/go-e5-8d-8f-e7-a8-8b-e6-b1-a0-e5-ae-9e-e7-8e-b0/"/>
       <url>/2018/04/02/go-e5-8d-8f-e7-a8-8b-e6-b1-a0-e5-ae-9e-e7-8e-b0/</url>
@@ -122,9 +147,9 @@
       
         <tags>
             
-            <tag> flask </tag>
-            
             <tag> mysql </tag>
+            
+            <tag> flask </tag>
             
         </tags>
       
@@ -214,9 +239,9 @@
       
         <tags>
             
-            <tag> 数据结构与算法分析 从语言描述 </tag>
-            
             <tag> c </tag>
+            
+            <tag> 数据结构与算法分析 从语言描述 </tag>
             
             <tag> 排序 </tag>
             

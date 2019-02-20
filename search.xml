@@ -402,9 +402,9 @@
       
         <tags>
             
-            <tag> build </tag>
-            
             <tag> go </tag>
+            
+            <tag> build </tag>
             
         </tags>
       

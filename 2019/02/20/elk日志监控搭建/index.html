@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Dr點燃">
 <meta property="og:description" content="elk日志监控搭建 centos7系统  1. 检查系统是否已安装java环境：java -version2. elk官网下载解压配置启动 使用默认配置启动es ./bin/elasticsearch &amp;amp; 测试是否启动成功 curl &amp;#39;http://localhost:9200/?pretty&amp;#39; 配置 logstash，在config目录下穿件conf.d文件夹用来存放配置">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-20T02:32:03.266Z">
+<meta property="og:updated_time" content="2019-02-25T07:33:21.740Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="elk日志监控搭建">
 <meta name="twitter:description" content="elk日志监控搭建 centos7系统  1. 检查系统是否已安装java环境：java -version2. elk官网下载解压配置启动 使用默认配置启动es ./bin/elasticsearch &amp;amp; 测试是否启动成功 curl &amp;#39;http://localhost:9200/?pretty&amp;#39; 配置 logstash，在config目录下穿件conf.d文件夹用来存放配置">
@@ -360,7 +360,7 @@
 <h2 id="1-检查系统是否已安装java环境：java-version"><a href="#1-检查系统是否已安装java环境：java-version" class="headerlink" title="1. 检查系统是否已安装java环境：java -version"></a>1. 检查系统是否已安装java环境：<code>java -version</code></h2><h2 id="2-elk官网下载解压"><a href="#2-elk官网下载解压" class="headerlink" title="2. elk官网下载解压"></a>2. <a href="https://www.elastic.co" target="_blank" rel="noopener">elk官网</a>下载解压</h2><h2 id="配置启动"><a href="#配置启动" class="headerlink" title="配置启动"></a>配置启动</h2><ol>
 <li>使用默认配置启动es <code>./bin/elasticsearch &amp;</code> 测试是否启动成功 <code>curl &#39;http://localhost:9200/?pretty&#39;</code></li>
 <li>配置 logstash，在config目录下穿件conf.d文件夹用来存放配置文件，启动 <code>./bin/logstash --path.settings ./config/ -f ./config/conf.d &amp;</code></li>
-<li>配置 filebeat 目录下的filebeat.yml文件，启动<code>./filebeat -e -c filebeat.yml &amp;</code></li>
+<li>配置 filebeat 目录下的filebeat.yml文件，启动<code>nohup ./filebeat -e -c filebeat.yml &gt;/dev/null 2&gt;&amp;1 &amp;</code></li>
 <li>kibana 启动<code>./bin/kibana &amp;</code></li>
 <li>使用nginx对kibana反向代理、添加登录限制。</li>
 </ol>
@@ -408,6 +408,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/mysql中rand函数使用/" rel="prev" title="mysql中rand函数使用">
+                mysql中rand函数使用 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -488,7 +492,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -510,7 +514,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

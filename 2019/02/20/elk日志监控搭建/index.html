@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Dr點燃">
 <meta property="og:description" content="elk日志监控搭建 centos7系统  1. 检查系统是否已安装java环境：java -version2. elk官网下载解压配置启动 使用默认配置启动es ./bin/elasticsearch &amp;amp; 测试是否启动成功 curl &amp;#39;http://localhost:9200/?pretty&amp;#39; 配置 logstash，在config目录下穿件conf.d文件夹用来存放配置">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-25T07:33:21.740Z">
+<meta property="og:updated_time" content="2019-05-09T03:19:47.570Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="elk日志监控搭建">
 <meta name="twitter:description" content="elk日志监控搭建 centos7系统  1. 检查系统是否已安装java环境：java -version2. elk官网下载解压配置启动 使用默认配置启动es ./bin/elasticsearch &amp;amp; 测试是否启动成功 curl &amp;#39;http://localhost:9200/?pretty&amp;#39; 配置 logstash，在config目录下穿件conf.d文件夹用来存放配置">
@@ -365,6 +365,15 @@
 <li>使用nginx对kibana反向代理、添加登录限制。</li>
 </ol>
 <h2 id="监控报警-kibana插件sentinl"><a href="#监控报警-kibana插件sentinl" class="headerlink" title="监控报警 kibana插件sentinl"></a>监控报警 kibana插件sentinl</h2><p>现在对应的sentinl版本<br>指定文件路径安装 <code>./kibana-plugin install file:///sentinl-v6.2.4.zip</code></p>
+<h2 id="kibana-配置nginx授权登录"><a href="#kibana-配置nginx授权登录" class="headerlink" title="kibana 配置nginx授权登录"></a>kibana 配置nginx授权登录</h2><ul>
+<li>安装密码生产工具 <code>yum install httpd-tools</code></li>
+<li>生成密码文件 <code>sudo htpasswd -bc /opt/nginx/conf/htpasswd.kibana admin admin</code></li>
+<li>配置nginx </li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> server &#123;</span><br><span class="line">   listen 5602;</span><br><span class="line">   server_name youname;       #主机名</span><br><span class="line"></span><br><span class="line">   location / &#123;</span><br><span class="line">       proxy_pass http://localhost:5601;</span><br><span class="line">       auth_basic &quot;Basic Authentication&quot;;</span><br><span class="line">       auth_basic_user_file &quot;/path/htpasswd.kibana&quot;; #密码文件位置</span><br><span class="line">       proxy_http_version 1.1;</span><br><span class="line">       proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">       proxy_set_header Connection &apos;upgrade&apos;;</span><br><span class="line">       proxy_set_header Host $host;</span><br><span class="line">       proxy_cache_bypass $http_upgrade;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启nginx</p>
+</li>
+</ul>
 
       
     </div>
@@ -587,7 +596,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#elk日志监控搭建"><span class="nav-number">1.</span> <span class="nav-text">elk日志监控搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-检查系统是否已安装java环境：java-version"><span class="nav-number">1.1.</span> <span class="nav-text">1. 检查系统是否已安装java环境：java -version</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-elk官网下载解压"><span class="nav-number">1.2.</span> <span class="nav-text">2. elk官网下载解压</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置启动"><span class="nav-number">1.3.</span> <span class="nav-text">配置启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#监控报警-kibana插件sentinl"><span class="nav-number">1.4.</span> <span class="nav-text">监控报警 kibana插件sentinl</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#elk日志监控搭建"><span class="nav-number">1.</span> <span class="nav-text">elk日志监控搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-检查系统是否已安装java环境：java-version"><span class="nav-number">1.1.</span> <span class="nav-text">1. 检查系统是否已安装java环境：java -version</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-elk官网下载解压"><span class="nav-number">1.2.</span> <span class="nav-text">2. elk官网下载解压</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置启动"><span class="nav-number">1.3.</span> <span class="nav-text">配置启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#监控报警-kibana插件sentinl"><span class="nav-number">1.4.</span> <span class="nav-text">监控报警 kibana插件sentinl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kibana-配置nginx授权登录"><span class="nav-number">1.5.</span> <span class="nav-text">kibana 配置nginx授权登录</span></a></li></ol></li></ol></div>
             
 
           </div>

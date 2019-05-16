@@ -3,6 +3,23 @@
   
     
     <entry>
+      <title>记一次file_get_contents报错</title>
+      <link href="/2019/05/16/%E8%AE%B0%E4%B8%80%E6%AC%A1file-get-contents%E6%8A%A5%E9%94%99/"/>
+      <url>/2019/05/16/%E8%AE%B0%E4%B8%80%E6%AC%A1file-get-contents%E6%8A%A5%E9%94%99/</url>
+      <content type="html"><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>php服务器报错：</p><p>ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:<br>error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</p><h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>查看<code>file_get_contents</code>函数文档发现警告⚠️</p><blockquote><p>Warning<br>使用 SSL 时，Microsoft IIS 会违反协议不发送close_notify标记就关闭连接。PHP 会在到达数据尾端时报告“SSL: Fatal Protocol Error”。 要解决此问题，error_reporting 应设定为降低级别至不包含警告。 PHP 4.3.7 及更高版本可以在使用 https:// 包装器打开流时检测出有问题的 IIS 服务器软件 并抑制警告。在使用 fsockopen() 创建 ssl:// 套接字时, 开发者需检测并抑制此警告。</p></blockquote><h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>根据文档说明添加</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error_reporting(E_ERROR | E_PARSE);</span><br><span class="line">$filePath = file_get_contents($image);</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+        <tags>
+            
+            <tag> php </tag>
+            
+            <tag> Microsoft IIS </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>web服务中获取客户端ip</title>
       <link href="/2019/05/15/web%E6%9C%8D%E5%8A%A1%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E7%AB%AFip/"/>
       <url>/2019/05/15/web%E6%9C%8D%E5%8A%A1%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E7%AB%AFip/</url>

@@ -68,6 +68,7 @@
 
 
 
+  <meta name="keywords" content="php,Microsoft IIS," />
 
 
 
@@ -77,16 +78,19 @@
 
 
 
-<meta name="description" content="书山有路勤为径 学海无涯苦作舟">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Dr點燃">
-<meta property="og:url" content="http://yoursite.com/tags/flask/index.html">
+
+<meta name="description" content="问题php服务器报错： ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed 排查查看file_get">
+<meta name="keywords" content="php,Microsoft IIS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次file_get_contents报错">
+<meta property="og:url" content="http://yoursite.com/2019/05/16/记一次file-get-contents报错/index.html">
 <meta property="og:site_name" content="Dr點燃">
-<meta property="og:description" content="书山有路勤为径 学海无涯苦作舟">
+<meta property="og:description" content="问题php服务器报错： ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed 排查查看file_get">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-16T09:24:00.203Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dr點燃">
-<meta name="twitter:description" content="书山有路勤为径 学海无涯苦作舟">
+<meta name="twitter:title" content="记一次file_get_contents报错">
+<meta name="twitter:description" content="问题php服务器报错： ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed 排查查看file_get">
 
 
 
@@ -116,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/flask/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/05/16/记一次file-get-contents报错/"/>
 
 
 
 
 
-  <title>标签: flask | Dr點燃</title>
+  <title>记一次file_get_contents报错 | Dr點燃</title>
   
 
 
@@ -141,7 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -269,54 +273,155 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h2>flask<small>标签</small>
-        </h2>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/16/记一次file-get-contents报错/">
 
-      <h3 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2017/12/26/e9-ab-98-e5-b9-b6-e5-8f-91-e4-b8-8b-e7-9a-84mysql-e9-97-ae-e9-a2-98/" itemprop="url">
-              
-                <span itemprop="name">高并发下的mysql问题</span>
-              
-            </a>
         
-      </h3>
+          <h2 class="post-title" itemprop="name headline">记一次file_get_contents报错</h2>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-12-26T15:27:49+08:00"
-              content="2017-12-26" >
-          12-26
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-16T17:08:19+08:00">
+                2019-05-16
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    </div>
+      
 
+      
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>php服务器报错：</p>
+<p>ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:<br>error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</p>
+<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>查看<code>file_get_contents</code>函数文档发现警告⚠️</p>
+<blockquote>
+<p>Warning<br>使用 SSL 时，Microsoft IIS 会违反协议不发送close_notify标记就关闭连接。PHP 会在到达数据尾端时报告“SSL: Fatal Protocol Error”。 要解决此问题，error_reporting 应设定为降低级别至不包含警告。 PHP 4.3.7 及更高版本可以在使用 https:// 包装器打开流时检测出有问题的 IIS 服务器软件 并抑制警告。在使用 fsockopen() 创建 ssl:// 套接字时, 开发者需检测并抑制此警告。</p>
+</blockquote>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>根据文档说明添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error_reporting(E_ERROR | E_PARSE);</span><br><span class="line">$filePath = file_get_contents($image);</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+            <a href="/tags/Microsoft-IIS/" rel="tag"># Microsoft IIS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/15/web服务中获取客户端ip/" rel="next" title="web服务中获取客户端ip">
+                <i class="fa fa-chevron-left"></i> web服务中获取客户端ip
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -324,6 +429,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -344,8 +453,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -449,6 +567,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排查"><span class="nav-number">2.</span> <span class="nav-text">排查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决"><span class="nav-number">3.</span> <span class="nav-text">解决</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -582,6 +716,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

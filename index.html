@@ -284,6 +284,257 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/02/centos7安装php7-3-6记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/02/centos7安装php7-3-6记录/" itemprop="url">centos7安装php7.3.6记录</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-02T20:53:50+08:00">
+                2019-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>./configure  –prefix=/opt/software/php-7.3.6 –sysconfdir=/opt/software/php-7.3.6/etc –with-config-file-scan-dir=/opt/software/php-7.3.6/etc/ini –enable-fpm –with-fpm-user= –with-fpm-group= –enable-mysqlnd –with-mysqli=mysqlnd –with-pdo-mysql=mysqlnd –enable-mysqlnd-compression-support –with-iconv-dir –with-freetype-dir –with-jpeg-dir –with-png-dir –with-zlib –with-zlib-dir –enable-libxml –with-libxml-dir –enable-xml –disable-rpath –enable-bcmath –enable-shmop –enable-sysvsem –enable-inline-optimization –with-curl –enable-mbregex –enable-mbstring –enable-intl –enable-ftp –with-gd –enable-gd-jis-conv –with-openssl –with-mhash –enable-pcntl –enable-sockets –with-xmlrpc –enable-zip –enable-soap –with-gettext –disable-fileinfo –enable-opcache=no –with-pear –enable-maintainer-zts –with-ldap=shared –enable-pdo –enable-sysvshm –with-xpm-dir –enable-session –enable-ctype –without-gdbm</p>
+<h3 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h3><blockquote>
+<p>configure: error: Please reinstall the libzip distribution</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#下载编译安装</span><br><span class="line">wget https://nih.at/libzip/libzip-1.2.0.tar.gz</span><br><span class="line">tar -zxvf libzip-1.2.0.tar.gz</span><br><span class="line">cd libzip-1.2.0</span><br><span class="line">./configure</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h3 id="报错-1"><a href="#报错-1" class="headerlink" title="报错"></a>报错</h3><p>configure: error: off_t undefined; check your library configuration</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#添加搜索路径到配置文件</span><br><span class="line">echo &apos;/usr/local/lib64</span><br><span class="line">/usr/local/lib</span><br><span class="line">/usr/lib</span><br><span class="line">/usr/lib64&apos;&gt;&gt;/etc/ld.so.conf</span><br><span class="line"></span><br><span class="line">#然后 更新配置</span><br><span class="line">ldconfig -v</span><br></pre></td></tr></table></figure>
+<h3 id="make-ext-zip-php-zip-lo-错误-1"><a href="#make-ext-zip-php-zip-lo-错误-1" class="headerlink" title="make: *** [ext/zip/php_zip.lo] 错误 1"></a>make: *** [ext/zip/php_zip.lo] 错误 1</h3><p>cp /usr/local/lib/libzip/include/zipconf.h /usr/local/include/zipconf.h</p>
+<h2 id="添加配置文件"><a href="#添加配置文件" class="headerlink" title="添加配置文件"></a>添加配置文件</h2><p>cp php-fpm.conf.default php-fpm.conf<br>sudo cp ~/php-7.3.6/php.ini-production ./lib/php.ini</p>
+<h3 id="扩展目录"><a href="#扩展目录" class="headerlink" title="扩展目录"></a>扩展目录</h3><p>/opt/software/php-7.3.6/lib/php/extensions/no-debug-zts-20180731/</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/18/laravel-excel使用记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/18/laravel-excel使用记录/" itemprop="url">laravel-excel使用记录</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-18T09:57:04+08:00">
+                2019-06-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="需要注意的点"><a href="#需要注意的点" class="headerlink" title="需要注意的点"></a>需要注意的点</h2><p>ps: 解决过的问题记录下来，不能相信自己脑子的记忆力，很快就会忘记 😆</p>
+<p>解决excel标题为汉字时，解析有问题；将<code>to_ascii</code>设置为<code>false</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">        |--------------------------------------------------------------------------</span><br><span class="line">        | Sheet heading conversion</span><br><span class="line">        |--------------------------------------------------------------------------</span><br><span class="line">        |</span><br><span class="line">        | Convert headings to ASCII 将标题转换为ASCII</span><br><span class="line">        | Note: only applies to &apos;heading&apos; settings &apos;true&apos; &amp;&amp; &apos;slugged&apos;</span><br><span class="line">        |</span><br><span class="line">        */</span><br><span class="line"></span><br><span class="line">        &apos;to_ascii&apos;                =&gt; false,</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/16/记一次file-get-contents报错/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1598,659 +1849,6 @@ func selectQuery(q int, pool2 *pool.Pool) {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/19/go-e9-80-9a-e9-81-93-e5-ae-9e-e7-8e-b0-e8-b6-85-e6-97-b6-e6-8e-a7-e5-88-b6-e3-80-81-e6-8e-a5-e6-94-b6-e7-b3-bb-e7-bb-9f-e9-80-80-e5-87-ba/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Dr點燃">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/lf.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Dr點燃">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/19/go-e9-80-9a-e9-81-93-e5-ae-9e-e7-8e-b0-e8-b6-85-e6-97-b6-e6-8e-a7-e5-88-b6-e3-80-81-e6-8e-a5-e6-94-b6-e7-b3-bb-e7-bb-9f-e9-80-80-e5-87-ba/" itemprop="url">go  通道实现超时控制、接收系统退出</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-19T21:48:47+08:00">
-                2018-03-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <pre><code>package main
-
-import (
-    &quot;os&quot;
-    &quot;time&quot;
-    &quot;errors&quot;
-    &quot;os/signal&quot;
-    &quot;log&quot;
-)
-
-type Runner struct {
-    interrupt chan os.Signal   //操作系统信号
-    complete  chan error       // 运行完成时返回信息
-    timeout   &amp;lt;-chan time.Time // 超时单向通道
-    tasks     []func(int)      // 存储方法切片
-}
-
-//超时返回信息
-var ErrTimeout = errors.New(&quot;received timeout&quot;)
-//系统中终止返回信息
-var ErrInterrupt = errors.New(&quot;received Interrupt&quot;)
-
-//Runner生成方法
-// os.Signal 系统信息接口
-// func After(d Duration) &amp;lt;-chan Time After会在另一线程经过时间段d后向返回值发送当时的时间
-func New(d time.Duration) *Runner {
-    return &amp;amp;Runner{
-        interrupt: make(chan os.Signal, 1),
-        complete:  make(chan error),
-        timeout:   time.After(d),
-    }
-}
-
-//向runner中添加需要运行的方法
-func (r *Runner) Add(tasks ...func(int)) {
-    r.tasks = append(r.tasks, tasks...)
-}
-
-//执行添加的每一个任务
-func (r *Runner) run() error {
-    for id, task := range r.tasks {
-        if r.gotInterrupt() {
-            return ErrInterrupt
-        }
-        task(id)
-    }
-
-    return nil
-}
-
-//验证是否收到系统中断信号
-func (r *Runner) gotInterrupt() bool {
-    select {
-    case &amp;lt;-r.interrupt:
-        signal.Stop(r.interrupt)
-        return true
-
-    default:
-        return false
-    }
-}
-
-// 执行所有任务，监听通道
-// func Notify(c chan&amp;lt;- os.Signal, sig ...os.Signal)
-// Notify函数让signal包将输入信号转发到c。如果没有列出要传递的信号，会将所有输入信号传递到c；否则只传递列出的输入信号。
-func (r *Runner) Start() error {
-    signal.Notify(r.interrupt, os.Interrupt)
-
-    go func() {
-        r.complete &amp;lt;- r.run()
-    }()
-
-    select {
-    case err := &amp;lt;-r.complete:
-        return err
-    case &amp;lt;-r.timeout:
-        return ErrTimeout
-    }
-}
-
-const timeout = 3 * time.Second
-
-func main() {
-    log.Println(&quot;starting work&quot;)
-
-    r := New(timeout)
-    r.Add(createWork(), createWork(), createWork(), createWork(), createWork(), createWork())
-    if err := r.Start(); err != nil {
-        switch err {
-        case ErrInterrupt:
-            log.Println(&quot;Terminating due to interrupt&quot;)
-            os.Exit(1)
-
-        case ErrTimeout:
-            log.Println(&quot;Terminating due to timeout&quot;)
-            os.Exit(2)
-        }
-    }
-
-    log.Println(&quot;run end!&quot;)
-}
-
-func createWork() func(int) {
-    return func(d int) {
-        log.Printf(&quot;work: %d start&quot;, d)
-        time.Sleep(time.Duration(d) * time.Second)
-        log.Printf(&quot;work %d end&quot;, d)
-    }
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/20/e5-9b-be-e7-9a-84-e6-b7-b1-e5-ba-a6-e4-bc-98-e5-85-88-e6-90-9c-e7-b4-a2-go-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Dr點燃">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/lf.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Dr點燃">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/20/e5-9b-be-e7-9a-84-e6-b7-b1-e5-ba-a6-e4-bc-98-e5-85-88-e6-90-9c-e7-b4-a2-go-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/" itemprop="url">《算法》无向图--go语言实现</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-20T15:17:29+08:00">
-                2018-01-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/算法数据结构/" itemprop="url" rel="index">
-                    <span itemprop="name">算法数据结构</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="无向图–go语言实现（持续更新）"><a href="#无向图–go语言实现（持续更新）" class="headerlink" title="无向图–go语言实现（持续更新）"></a>无向图–go语言实现（持续更新）</h1><blockquote>
-<p>在许多计算机应用中，由相连的结点所表示的模型起到了关键的作用。这些结点之间的连接很 自然地会让人们产生一连串的疑问:沿着这些连接能否从一个结点到达另一个结点?有多少个结点 和指定的结点相连?两个结点之间最短的连接是哪一条?<br>  要描述这些问题，我们要使用一种抽象的数学对象，叫做图<br>      摘自《算法》</p>
-</blockquote>
-<h4 id="图的数据结构和基本操作"><a href="#图的数据结构和基本操作" class="headerlink" title="图的数据结构和基本操作"></a>图的数据结构和基本操作</h4><pre><code>package graph
-
-import (
-    &quot;container/list&quot;
-)
-
-// 图的数据结构
-type Graph struct {
-    v   int          // 顶点数
-    e   int          // 边数
-    adj []*list.List // 邻边链表切片
-}
-
-// 创建一个图
-func New(v int, e [][2]int) *Graph {
-    graph := new(Graph)
-    graph.v = v
-    graph.e = len(e)
-
-    var adj []*list.List
-
-    for i := 0; i &amp;lt; v; i++ {
-        adj = append(adj, list.New())
-    }
-    graph.adj = adj
-
-    for _, val := range e {
-        graph.AddEdge(val[0], val[1])
-    }
-    return graph
-}
-
-// 获取图的定点数量
-func (g *Graph) V() int {
-    return g.v
-}
-
-// 获取图中边的数量
-func (g *Graph) E() int {
-    return g.e
-}
-
-// 向图中添加一条边
-func (g *Graph) AddEdge(v int, w int) {
-    g.adj[v].PushFront(w)
-    g.adj[w].PushFront(v)
-}
-
-// 获取与顶点相通的其他顶点 返回一个链表
-func (g *Graph) Adj(v int) *list.List {
-    return g.adj[v]
-}
-
-`&lt;/pre&gt;
-
-#### 深度优先搜索
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
-
-/**
-深度优先搜索算法
- */
-
-type depth struct {
-    marked []bool
-    count  int
-}
-
-func NewDepth(g *Graph, s int) *depth {
-
-    depth := &amp;amp;depth{
-        marked: make([]bool, g.v),
-        count:  0,
-    }
-    depth.dfs(g, s)
-
-    return depth
-}
-
-// 利用递归实现图深度优先搜索
-func (d *depth) dfs(g *Graph, v int) {
-    d.marked[v] = true
-    d.count++
-
-    for e := g.Adj(v).Front(); e != nil; e = e.Next() {
-
-        w, _ := e.Value.(int)
-        if !d.marked[w] {
-            d.dfs(g, w)
-        }
-    }
-}
-
-// 判断传入的顶点是否与初始顶点相通
-func (d *depth) Marked(w int) bool {
-    return d.marked[w]
-}
-
-// 和初始顶点相通的顶点数量
-func (d *depth) Count() int {
-    return d.count
-}
-
-`&lt;/pre&gt;
-
-#### 深度优先搜索路径
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
-
-type Paths struct {
-    marked []bool
-    edgeTo []int
-    final  int
-}
-
-func NewPaths(graph *Graph, s int) *Paths {
-    paths := &amp;amp;Paths{
-        marked: make([]bool, graph.V()),
-        edgeTo: make([]int, graph.V()),
-        final:  s,
-    }
-    paths.dfs(graph, s)
-    return paths
-}
-
-func (p *Paths) dfs(graph *Graph, v int) {
-    p.marked[v] = true
-
-    for e := graph.Adj(v).Front(); e != nil; e = e.Next() {
-        w, _ := e.Value.(int)
-        if !p.marked[w] {
-            p.edgeTo[w] = v
-            p.dfs(graph, w)
-        }
-    }
-}
-
-func (p *Paths) HasPathTo(v int) bool {
-    return p.marked[v]
-}
-
-func (p *Paths) PathTo(v int) []int {
-    if !p.HasPathTo(v) {
-        return nil
-    }
-    path := make([]int, 0)
-    var x int
-    for x = v; x != p.final; x = p.edgeTo[x] {
-        path = append(path, x)
-    }
-    path = append(path, x)
-    return path
-}
-
-`&lt;/pre&gt;
-
-#### 广度优先搜索最短路径
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
-
-import &quot;container/list&quot;
-
-/**
-*广度优先搜索
-*/
-
-type Breadth struct {
-    marked []bool
-    edgeTo []int
-    final  int
-}
-
-func NewBreadth(graph *Graph, s int) *Breadth {
-    breadth := &amp;amp;Breadth{
-        marked: make([]bool, graph.v),
-        edgeTo: make([]int, graph.v),
-        final:  s,
-    }
-    breadth.bfs(graph, s)
-
-    return breadth
-}
-
-func (b *Breadth) bfs(graph *Graph, s int) {
-    queue := list.New()
-    b.marked[s] = true
-    queue.PushBack(s)
-
-    for queue.Len() != 0 {
-        element := queue.Front()
-        v, _ := queue.Remove(element).(int)
-        for e := graph.Adj(v).Front(); e != nil; e = e.Next() {
-            val, _ := e.Value.(int)
-            if b.marked[val] == false {
-                b.marked[val] = true
-                b.edgeTo[val] = v
-                queue.PushBack(e.Value)
-            }
-        }
-    }
-
-}
-
-func (b *Breadth) HasPathTo(v int) bool {
-    return b.marked[v]
-}
-
-func (b *Breadth) Path(v int) []int {
-    if !b.HasPathTo(v) {
-        return nil
-    }
-    path := make([]int, 0)
-    for p := v; p != b.final;p = b.edgeTo[p] {
-        path = append(path,p)
-    }
-    path = append(path,b.final)
-
-    return path
-}
-
-`&lt;/pre&gt;
-
-#### 最后测试
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package main
-
-import (
-    &quot;graph&quot;
-    &quot;fmt&quot;
-)
-
-func main() {
-    data := [][2]int{
-        {0, 1},
-        {1, 3},
-        {0, 3},
-    }
-    g := graph.New(4, data)
-
-    //depth := graph.NewDepth(g, 1)
-    //fmt.Println(depth.Marked(3))
-
-    //paths := graph.NewPaths(g, 0)
-    //fmt.Println(paths.PathTo(3))
-
-    paths := graph.NewBreadth(g, 0)
-    fmt.Println(paths.Path(3))
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2305,7 +1903,7 @@ func main() {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -284,6 +284,659 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/19/go-e9-80-9a-e9-81-93-e5-ae-9e-e7-8e-b0-e8-b6-85-e6-97-b6-e6-8e-a7-e5-88-b6-e3-80-81-e6-8e-a5-e6-94-b6-e7-b3-bb-e7-bb-9f-e9-80-80-e5-87-ba/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/19/go-e9-80-9a-e9-81-93-e5-ae-9e-e7-8e-b0-e8-b6-85-e6-97-b6-e6-8e-a7-e5-88-b6-e3-80-81-e6-8e-a5-e6-94-b6-e7-b3-bb-e7-bb-9f-e9-80-80-e5-87-ba/" itemprop="url">go  通道实现超时控制、接收系统退出</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-19T21:48:47+08:00">
+                2018-03-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <pre><code>package main
+
+import (
+    &quot;os&quot;
+    &quot;time&quot;
+    &quot;errors&quot;
+    &quot;os/signal&quot;
+    &quot;log&quot;
+)
+
+type Runner struct {
+    interrupt chan os.Signal   //操作系统信号
+    complete  chan error       // 运行完成时返回信息
+    timeout   &amp;lt;-chan time.Time // 超时单向通道
+    tasks     []func(int)      // 存储方法切片
+}
+
+//超时返回信息
+var ErrTimeout = errors.New(&quot;received timeout&quot;)
+//系统中终止返回信息
+var ErrInterrupt = errors.New(&quot;received Interrupt&quot;)
+
+//Runner生成方法
+// os.Signal 系统信息接口
+// func After(d Duration) &amp;lt;-chan Time After会在另一线程经过时间段d后向返回值发送当时的时间
+func New(d time.Duration) *Runner {
+    return &amp;amp;Runner{
+        interrupt: make(chan os.Signal, 1),
+        complete:  make(chan error),
+        timeout:   time.After(d),
+    }
+}
+
+//向runner中添加需要运行的方法
+func (r *Runner) Add(tasks ...func(int)) {
+    r.tasks = append(r.tasks, tasks...)
+}
+
+//执行添加的每一个任务
+func (r *Runner) run() error {
+    for id, task := range r.tasks {
+        if r.gotInterrupt() {
+            return ErrInterrupt
+        }
+        task(id)
+    }
+
+    return nil
+}
+
+//验证是否收到系统中断信号
+func (r *Runner) gotInterrupt() bool {
+    select {
+    case &amp;lt;-r.interrupt:
+        signal.Stop(r.interrupt)
+        return true
+
+    default:
+        return false
+    }
+}
+
+// 执行所有任务，监听通道
+// func Notify(c chan&amp;lt;- os.Signal, sig ...os.Signal)
+// Notify函数让signal包将输入信号转发到c。如果没有列出要传递的信号，会将所有输入信号传递到c；否则只传递列出的输入信号。
+func (r *Runner) Start() error {
+    signal.Notify(r.interrupt, os.Interrupt)
+
+    go func() {
+        r.complete &amp;lt;- r.run()
+    }()
+
+    select {
+    case err := &amp;lt;-r.complete:
+        return err
+    case &amp;lt;-r.timeout:
+        return ErrTimeout
+    }
+}
+
+const timeout = 3 * time.Second
+
+func main() {
+    log.Println(&quot;starting work&quot;)
+
+    r := New(timeout)
+    r.Add(createWork(), createWork(), createWork(), createWork(), createWork(), createWork())
+    if err := r.Start(); err != nil {
+        switch err {
+        case ErrInterrupt:
+            log.Println(&quot;Terminating due to interrupt&quot;)
+            os.Exit(1)
+
+        case ErrTimeout:
+            log.Println(&quot;Terminating due to timeout&quot;)
+            os.Exit(2)
+        }
+    }
+
+    log.Println(&quot;run end!&quot;)
+}
+
+func createWork() func(int) {
+    return func(d int) {
+        log.Printf(&quot;work: %d start&quot;, d)
+        time.Sleep(time.Duration(d) * time.Second)
+        log.Printf(&quot;work %d end&quot;, d)
+    }
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/20/e5-9b-be-e7-9a-84-e6-b7-b1-e5-ba-a6-e4-bc-98-e5-85-88-e6-90-9c-e7-b4-a2-go-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/20/e5-9b-be-e7-9a-84-e6-b7-b1-e5-ba-a6-e4-bc-98-e5-85-88-e6-90-9c-e7-b4-a2-go-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/" itemprop="url">《算法》无向图--go语言实现</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-20T15:17:29+08:00">
+                2018-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/算法数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">算法数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="无向图–go语言实现（持续更新）"><a href="#无向图–go语言实现（持续更新）" class="headerlink" title="无向图–go语言实现（持续更新）"></a>无向图–go语言实现（持续更新）</h1><blockquote>
+<p>在许多计算机应用中，由相连的结点所表示的模型起到了关键的作用。这些结点之间的连接很 自然地会让人们产生一连串的疑问:沿着这些连接能否从一个结点到达另一个结点?有多少个结点 和指定的结点相连?两个结点之间最短的连接是哪一条?<br>  要描述这些问题，我们要使用一种抽象的数学对象，叫做图<br>      摘自《算法》</p>
+</blockquote>
+<h4 id="图的数据结构和基本操作"><a href="#图的数据结构和基本操作" class="headerlink" title="图的数据结构和基本操作"></a>图的数据结构和基本操作</h4><pre><code>package graph
+
+import (
+    &quot;container/list&quot;
+)
+
+// 图的数据结构
+type Graph struct {
+    v   int          // 顶点数
+    e   int          // 边数
+    adj []*list.List // 邻边链表切片
+}
+
+// 创建一个图
+func New(v int, e [][2]int) *Graph {
+    graph := new(Graph)
+    graph.v = v
+    graph.e = len(e)
+
+    var adj []*list.List
+
+    for i := 0; i &amp;lt; v; i++ {
+        adj = append(adj, list.New())
+    }
+    graph.adj = adj
+
+    for _, val := range e {
+        graph.AddEdge(val[0], val[1])
+    }
+    return graph
+}
+
+// 获取图的定点数量
+func (g *Graph) V() int {
+    return g.v
+}
+
+// 获取图中边的数量
+func (g *Graph) E() int {
+    return g.e
+}
+
+// 向图中添加一条边
+func (g *Graph) AddEdge(v int, w int) {
+    g.adj[v].PushFront(w)
+    g.adj[w].PushFront(v)
+}
+
+// 获取与顶点相通的其他顶点 返回一个链表
+func (g *Graph) Adj(v int) *list.List {
+    return g.adj[v]
+}
+
+`&lt;/pre&gt;
+
+#### 深度优先搜索
+
+&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
+
+/**
+深度优先搜索算法
+ */
+
+type depth struct {
+    marked []bool
+    count  int
+}
+
+func NewDepth(g *Graph, s int) *depth {
+
+    depth := &amp;amp;depth{
+        marked: make([]bool, g.v),
+        count:  0,
+    }
+    depth.dfs(g, s)
+
+    return depth
+}
+
+// 利用递归实现图深度优先搜索
+func (d *depth) dfs(g *Graph, v int) {
+    d.marked[v] = true
+    d.count++
+
+    for e := g.Adj(v).Front(); e != nil; e = e.Next() {
+
+        w, _ := e.Value.(int)
+        if !d.marked[w] {
+            d.dfs(g, w)
+        }
+    }
+}
+
+// 判断传入的顶点是否与初始顶点相通
+func (d *depth) Marked(w int) bool {
+    return d.marked[w]
+}
+
+// 和初始顶点相通的顶点数量
+func (d *depth) Count() int {
+    return d.count
+}
+
+`&lt;/pre&gt;
+
+#### 深度优先搜索路径
+
+&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
+
+type Paths struct {
+    marked []bool
+    edgeTo []int
+    final  int
+}
+
+func NewPaths(graph *Graph, s int) *Paths {
+    paths := &amp;amp;Paths{
+        marked: make([]bool, graph.V()),
+        edgeTo: make([]int, graph.V()),
+        final:  s,
+    }
+    paths.dfs(graph, s)
+    return paths
+}
+
+func (p *Paths) dfs(graph *Graph, v int) {
+    p.marked[v] = true
+
+    for e := graph.Adj(v).Front(); e != nil; e = e.Next() {
+        w, _ := e.Value.(int)
+        if !p.marked[w] {
+            p.edgeTo[w] = v
+            p.dfs(graph, w)
+        }
+    }
+}
+
+func (p *Paths) HasPathTo(v int) bool {
+    return p.marked[v]
+}
+
+func (p *Paths) PathTo(v int) []int {
+    if !p.HasPathTo(v) {
+        return nil
+    }
+    path := make([]int, 0)
+    var x int
+    for x = v; x != p.final; x = p.edgeTo[x] {
+        path = append(path, x)
+    }
+    path = append(path, x)
+    return path
+}
+
+`&lt;/pre&gt;
+
+#### 广度优先搜索最短路径
+
+&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
+
+import &quot;container/list&quot;
+
+/**
+*广度优先搜索
+*/
+
+type Breadth struct {
+    marked []bool
+    edgeTo []int
+    final  int
+}
+
+func NewBreadth(graph *Graph, s int) *Breadth {
+    breadth := &amp;amp;Breadth{
+        marked: make([]bool, graph.v),
+        edgeTo: make([]int, graph.v),
+        final:  s,
+    }
+    breadth.bfs(graph, s)
+
+    return breadth
+}
+
+func (b *Breadth) bfs(graph *Graph, s int) {
+    queue := list.New()
+    b.marked[s] = true
+    queue.PushBack(s)
+
+    for queue.Len() != 0 {
+        element := queue.Front()
+        v, _ := queue.Remove(element).(int)
+        for e := graph.Adj(v).Front(); e != nil; e = e.Next() {
+            val, _ := e.Value.(int)
+            if b.marked[val] == false {
+                b.marked[val] = true
+                b.edgeTo[val] = v
+                queue.PushBack(e.Value)
+            }
+        }
+    }
+
+}
+
+func (b *Breadth) HasPathTo(v int) bool {
+    return b.marked[v]
+}
+
+func (b *Breadth) Path(v int) []int {
+    if !b.HasPathTo(v) {
+        return nil
+    }
+    path := make([]int, 0)
+    for p := v; p != b.final;p = b.edgeTo[p] {
+        path = append(path,p)
+    }
+    path = append(path,b.final)
+
+    return path
+}
+
+`&lt;/pre&gt;
+
+#### 最后测试
+
+&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package main
+
+import (
+    &quot;graph&quot;
+    &quot;fmt&quot;
+)
+
+func main() {
+    data := [][2]int{
+        {0, 1},
+        {1, 3},
+        {0, 3},
+    }
+    g := graph.New(4, data)
+
+    //depth := graph.NewDepth(g, 1)
+    //fmt.Println(depth.Marked(3))
+
+    //paths := graph.NewPaths(g, 0)
+    //fmt.Println(paths.PathTo(3))
+
+    paths := graph.NewBreadth(g, 0)
+    fmt.Println(paths.Path(3))
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/28/js-e6-97-b6-e9-97-b4-e6-a0-bc-e5-bc-8f-e5-8c-96-e4-bb-a3-e7-a0-81-e7-89-87-e6-ae-b5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1826,366 +2479,6 @@ int Median3(int d[], int left, int right)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/23/pip-e6-ba-90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Dr點燃">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/lf.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Dr點燃">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/23/pip-e6-ba-90/" itemprop="url">pip 源</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-23T12:05:36+08:00">
-                2017-08-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index">
-                    <span itemprop="name">python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>阿里</p>
-<blockquote>
-<p><a href="http://mirrors.aliyun.com/pypi/simple" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple</a></p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/19/laravel-e9-98-9f-e5-88-97-e4-bd-bf-e7-94-a8-e4-b8-ad-e7-9a-84-e9-97-ae-e9-a2-98-e8-a7-a3-e5-86-b3-e8-ae-b0-e5-bd-95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Dr點燃">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/lf.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Dr點燃">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/19/laravel-e9-98-9f-e5-88-97-e4-bd-bf-e7-94-a8-e4-b8-ad-e7-9a-84-e9-97-ae-e9-a2-98-e8-a7-a3-e5-86-b3-e8-ae-b0-e5-bd-95/" itemprop="url">分析Laravel队列实现原理解决问题</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-19T17:43:52+08:00">
-                2017-08-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Laravel/" itemprop="url" rel="index">
-                    <span itemprop="name">Laravel</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>公司项目使用Laravel的开发的两个项目在同一个测试服务器部署，公用同一个redis。在使用laravel中的队列时，产生冲突干扰。</p>
-<h4 id="查找问题原因"><a href="#查找问题原因" class="headerlink" title="查找问题原因"></a>查找问题原因</h4><p>在laravel 队列的操作类<code>Illuminate\Queue\RedisQueue.php</code>中可以看到<code>pushRaw()</code>方法：</p>
-<pre><code>// 将一任务推入队列中
-public function pushRaw($payload, $queue = null, array $options = [])
-    {
-        $this-&amp;gt;getConnection()-&amp;gt;rpush($this-&amp;gt;getQueue($queue), $payload);
-
-        return Arr::get(json_decode($payload, true), &apos;id&apos;);
-    }
-`&lt;/pre&gt;
-
-从该方法中可以看出Lrarvel队列的redis实现是通过list结构实现的，`rpush(key, value)`是将value推入键值为key的redis队列，key的值则是通过`$this-&amp;gt;getQueue($queue)` 获取到的
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`protected function getQueue($queue)
-    {
-        return &apos;queues:&apos;.($queue ?: $this-&amp;gt;default);
-    }
-`&lt;/pre&gt;
-
-所以的redis中list中的key是 `&apos;queues:&apos;.($queue ?: $this-&amp;gt;default);`拼接的，`$this-&amp;gt;default` 的值是 `RedisQueue` 实例化的时候从`config\queue.php`配置中加载的 `&apos;queue&apos;      =&amp;gt; &apos;default&apos;`，`$queue` 是添加队列时`$this-&amp;gt;dispatch( new jobClass()-&amp;gt;onQueue($queue) )`传入的。
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`// config\queue.php 文件中的redis配置部分
-&apos;redis&apos; =&amp;gt; [
-            &apos;driver&apos;     =&amp;gt; &apos;redis&apos;,
-            &apos;connection&apos; =&amp;gt; &apos;default&apos;,
-            &apos;queue&apos;      =&amp;gt; &apos;default&apos;,
-            &apos;expire&apos;     =&amp;gt; 60,
-        ],
-`&lt;/pre&gt;
-
-至此，两个项目的队列冲突原因就找到了。因为redis队列配置中 `&apos;queue&apos;      =&amp;gt; &apos;default&apos;` 都使用的默认的default，所以当共用redis时，默认的队列list 都是&apos;queue:default&apos;,所以导致了冲突。
-
-因为队列监听 监听的队列名称是由 --queue参数决定的，如果不传就是我们上面设置的默认值，若传了就会根据传入的队列名从前往后优先依次处理，具体见代码`Illuminate\Queue\Worker.php`中：
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`protected function getNextJob($connection, $queue)
-    {
-        if (is_null($queue)) {
-            return $connection-&amp;gt;pop();
-        }
-
-        foreach (explode(&apos;,&apos;, $queue) as $queue) {
-            if (! is_null($job = $connection-&amp;gt;pop($queue))) {
-                return $job;
-            }
-        }
-    }
-`&lt;/pre&gt;
-
-`$queue`就是`--queue=`传入的参数，当 $queue不存在是直接调用`$connection-&amp;gt;pop()`当参数存在时会将参数解析，优先处理排在前面的队列名称，将队列名称传入`pop($queue)`, `pop()`会尝试从指定队列或默认队列中获取队列任务
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`// Illuminate\Queue\RedisQueue.php
-public function pop($queue = null)
-    {
-        $original = $queue ?: $this-&amp;gt;default;
-
-        $queue = $this-&amp;gt;getQueue($queue);
-
-        if (! is_null($this-&amp;gt;expire)) {
-            $this-&amp;gt;migrateAllExpiredJobs($queue);
-        }
-
-        $job = $this-&amp;gt;getConnection()-&amp;gt;lpop($queue);
-
-        if (! is_null($job)) {
-            $this-&amp;gt;getConnection()-&amp;gt;zadd($queue.&apos;:reserved&apos;, $this-&amp;gt;getTime() + $this-&amp;gt;expire, $job);
-
-            return new RedisJob($this-&amp;gt;container, $this, $job, $original);
-        }
-    }
-</code></pre><p>至此搞清了队列执行的原理。</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>将queue的配置文件中默认队列修改为不同的名称，比如： ‘queue’      =&gt; laravel1’,’queue’      =&gt; laravel2’。</p>
-<p>队列监听 <code>php artisan queue:listen redis --queue=laravel1,syncExpress</code></p>
-<h4 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h4><p>遇到问题，莫要病急乱投医。从代码入手，分析理解实现原理，找对点，解决方法也许很简单，^_^。</p>
-<p>欢迎关注我的<a href="http://llheng.info" target="_blank" rel="noopener">博客</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2240,7 +2533,7 @@ public function pop($queue = null)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

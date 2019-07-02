@@ -3,6 +3,38 @@
   
     
     <entry>
+      <title>centos7安装php7.3.6记录</title>
+      <link href="/2019/07/02/centos7%E5%AE%89%E8%A3%85php7-3-6%E8%AE%B0%E5%BD%95/"/>
+      <url>/2019/07/02/centos7%E5%AE%89%E8%A3%85php7-3-6%E8%AE%B0%E5%BD%95/</url>
+      <content type="html"><![CDATA[<p>./configure  –prefix=/opt/software/php-7.3.6 –sysconfdir=/opt/software/php-7.3.6/etc –with-config-file-scan-dir=/opt/software/php-7.3.6/etc/ini –enable-fpm –with-fpm-user= –with-fpm-group= –enable-mysqlnd –with-mysqli=mysqlnd –with-pdo-mysql=mysqlnd –enable-mysqlnd-compression-support –with-iconv-dir –with-freetype-dir –with-jpeg-dir –with-png-dir –with-zlib –with-zlib-dir –enable-libxml –with-libxml-dir –enable-xml –disable-rpath –enable-bcmath –enable-shmop –enable-sysvsem –enable-inline-optimization –with-curl –enable-mbregex –enable-mbstring –enable-intl –enable-ftp –with-gd –enable-gd-jis-conv –with-openssl –with-mhash –enable-pcntl –enable-sockets –with-xmlrpc –enable-zip –enable-soap –with-gettext –disable-fileinfo –enable-opcache=no –with-pear –enable-maintainer-zts –with-ldap=shared –enable-pdo –enable-sysvshm –with-xpm-dir –enable-session –enable-ctype –without-gdbm</p><h3 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h3><blockquote><p>configure: error: Please reinstall the libzip distribution</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#下载编译安装</span><br><span class="line">wget https://nih.at/libzip/libzip-1.2.0.tar.gz</span><br><span class="line">tar -zxvf libzip-1.2.0.tar.gz</span><br><span class="line">cd libzip-1.2.0</span><br><span class="line">./configure</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure><h3 id="报错-1"><a href="#报错-1" class="headerlink" title="报错"></a>报错</h3><p>configure: error: off_t undefined; check your library configuration</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#添加搜索路径到配置文件</span><br><span class="line">echo &apos;/usr/local/lib64</span><br><span class="line">/usr/local/lib</span><br><span class="line">/usr/lib</span><br><span class="line">/usr/lib64&apos;&gt;&gt;/etc/ld.so.conf</span><br><span class="line"></span><br><span class="line">#然后 更新配置</span><br><span class="line">ldconfig -v</span><br></pre></td></tr></table></figure><h3 id="make-ext-zip-php-zip-lo-错误-1"><a href="#make-ext-zip-php-zip-lo-错误-1" class="headerlink" title="make: *** [ext/zip/php_zip.lo] 错误 1"></a>make: *** [ext/zip/php_zip.lo] 错误 1</h3><p>cp /usr/local/lib/libzip/include/zipconf.h /usr/local/include/zipconf.h</p><h2 id="添加配置文件"><a href="#添加配置文件" class="headerlink" title="添加配置文件"></a>添加配置文件</h2><p>cp php-fpm.conf.default php-fpm.conf<br>sudo cp ~/php-7.3.6/php.ini-production ./lib/php.ini</p><h3 id="扩展目录"><a href="#扩展目录" class="headerlink" title="扩展目录"></a>扩展目录</h3><p>/opt/software/php-7.3.6/lib/php/extensions/no-debug-zts-20180731/</p>]]></content>
+      
+      
+        <tags>
+            
+            <tag> php </tag>
+            
+            <tag> linux </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>laravel-excel使用记录</title>
+      <link href="/2019/06/18/laravel-excel%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/"/>
+      <url>/2019/06/18/laravel-excel%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/</url>
+      <content type="html"><![CDATA[<h2 id="需要注意的点"><a href="#需要注意的点" class="headerlink" title="需要注意的点"></a>需要注意的点</h2><p>ps: 解决过的问题记录下来，不能相信自己脑子的记忆力，很快就会忘记 😆</p><p>解决excel标题为汉字时，解析有问题；将<code>to_ascii</code>设置为<code>false</code></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">        |--------------------------------------------------------------------------</span><br><span class="line">        | Sheet heading conversion</span><br><span class="line">        |--------------------------------------------------------------------------</span><br><span class="line">        |</span><br><span class="line">        | Convert headings to ASCII 将标题转换为ASCII</span><br><span class="line">        | Note: only applies to &apos;heading&apos; settings &apos;true&apos; &amp;&amp; &apos;slugged&apos;</span><br><span class="line">        |</span><br><span class="line">        */</span><br><span class="line"></span><br><span class="line">        &apos;to_ascii&apos;                =&gt; false,</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+        <tags>
+            
+            <tag> laravel </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>记一次file_get_contents报错</title>
       <link href="/2019/05/16/%E8%AE%B0%E4%B8%80%E6%AC%A1file-get-contents%E6%8A%A5%E9%94%99/"/>
       <url>/2019/05/16/%E8%AE%B0%E4%B8%80%E6%AC%A1file-get-contents%E6%8A%A5%E9%94%99/</url>
@@ -428,9 +460,9 @@
       
         <tags>
             
-            <tag> Laravel </tag>
-            
             <tag> php </tag>
+            
+            <tag> Laravel </tag>
             
             <tag> queue </tag>
             
@@ -683,9 +715,9 @@
       
         <tags>
             
-            <tag> Laravel </tag>
-            
             <tag> php </tag>
+            
+            <tag> Laravel </tag>
             
         </tags>
       

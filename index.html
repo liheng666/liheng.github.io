@@ -284,6 +284,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/24/centos7用户最大进程限制导致的问题排查/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Dr點燃">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/lf.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dr點燃">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/24/centos7用户最大进程限制导致的问题排查/" itemprop="url">centos7用户最大进程限制导致的问题排查</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-24T10:52:20+08:00">
+                2019-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><blockquote>
+<p>/etc/security/limits.d/90-nproc.conf 与 /etc/security/limits.conf 都是系统用户资源配置文件</p>
+</blockquote>
+<p>/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/etc/security/limits.d/90-nproc.conf配置上限影响的。</p>
+<blockquote>
+</blockquote>
+<p>一般系统普通用户进程数满了都是修改/etc/security/limits.d/90-nproc.conf文件。</p>
+<h2 id="排查过程"><a href="#排查过程" class="headerlink" title="排查过程"></a>排查过程</h2><h3 id="服务器报错"><a href="#服务器报错" class="headerlink" title="服务器报错"></a>服务器报错</h3><blockquote>
+<p> ErrorException: proc_open(): fork failed - Resource temporarily unavailable </p>
+</blockquote>
+<p>首先查看资源使用情况</p>
+<ul>
+<li><code>top</code>查看服务器资源大概使用情况，cpu、内存 正常。</li>
+<li><code>ps -ef|wc -l</code>进一步查看当前用户下的进程数量在<b>1024</b> 左右</li>
+</ul>
+<p>初步判断是用户最大进程数限制</p>
+<ul>
+<li><code>ulimit -a</code> 查看用户最大进程配置 是 31207</li>
+</ul>
+<blockquote>
+<p>max user processes              (-u) 31207</p>
+</blockquote>
+<p>很迷惑 ！？？明明数量没限制为什么进程一直在1024左右。</p>
+<ul>
+<li>google 查询相关问题</li>
+</ul>
+<p>最终发现 </p>
+<blockquote>
+<p>/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/etc/security/limits.d/90-nproc.conf配置上限影响的。</p>
+</blockquote>
+<p>修改<code>/etc/security/limits.d/90-nproc.conf</code>文件为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*          soft    nproc     10240</span><br><span class="line">root       soft    nproc     unlimited</span><br></pre></td></tr></table></figure>
+<p><b>解决问题</b></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/02/centos7安装php7-3-6记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1551,304 +1703,6 @@ func (p *Pool) Shutdown() {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/25/go-pool-e8-b5-84-e6-ba-90-e6-b1-a0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Dr點燃">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/lf.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Dr點燃">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/25/go-pool-e8-b5-84-e6-ba-90-e6-b1-a0/" itemprop="url">go pool资源池</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-25T19:44:55+08:00">
-                2018-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="资源池实现"><a href="#资源池实现" class="headerlink" title="资源池实现"></a>资源池实现</h1><pre><code>package pool
-
-import (
-    &quot;sync&quot;
-    &quot;io&quot;
-    &quot;errors&quot;
-    &quot;log&quot;
-)
-
-type Pool struct {
-    m         sync.Mutex
-    resources chan io.Closer
-    factory   func() (io.Closer, error)
-    closed    bool
-}
-
-// 资源池已关闭错误提示
-var ErrPoolClosed = errors.New(&quot;pool has been closed&quot;)
-
-func New(fn func() (io.Closer, error), size uint) (*Pool, error) {
-    if size &amp;lt;= 0 {
-        return nil, errors.New(&quot;pool size too small&quot;)
-    }
-
-    return &amp;amp;Pool{
-        resources: make(chan io.Closer, size),
-        factory:   fn,
-    }, nil
-}
-
-// 获取一个资源
-func (p *Pool) Acquire() (resource io.Closer, err error) {
-    select {
-    case r, ok := &amp;lt;-p.resources:
-        log.Println(&quot;Acquire:&quot;, &quot;shared resource&quot;)
-        if !ok {
-            return nil, ErrPoolClosed
-        }
-        return r, nil
-    default:
-        log.Println(&quot;Acquire:&quot;, &quot;new resource&quot;)
-        return p.factory()
-    }
-}
-
-// 释放资源回池
-func (p *Pool) Release(r io.Closer) {
-    p.m.Lock()
-    defer p.m.Unlock()
-
-    if p.closed {
-        r.Close()
-        return
-    }
-
-    select {
-    case p.resources &amp;lt;- r:
-        log.Println(&quot;Release:&quot;, &quot;in queue&quot;)
-    default:
-        log.Println(&quot;Release:&quot;, &quot;closeing&quot;)
-        r.Close()
-    }
-}
-
-// 关闭资源池
-func (p *Pool) Close() {
-    p.m.Lock()
-    defer p.m.Unlock()
-
-    if p.closed {
-        return
-    }
-
-    p.closed = true
-    close(p.resources)
-
-    for r := range p.resources {
-        r.Close()
-    }
-}
-
-`&lt;/pre&gt;
-
-# 测试
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package main
-
-import (
-    &quot;log&quot;
-    &quot;io&quot;
-    &quot;sync/atomic&quot;
-    &quot;mypackages/pool&quot;
-    &quot;sync&quot;
-    &quot;time&quot;
-    &quot;math/rand&quot;
-)
-
-const (
-    maxGoroutines = 200 // 最大协程数
-    poolResources = 10  //资源池资源数
-)
-
-type dbConn struct {
-    ID int32
-}
-
-func (d *dbConn) Close() error {
-    log.Println(&quot;close connection:&quot;, d.ID)
-    return nil
-}
-
-var resourceInt int32
-
-// 创建连接工厂函数
-func createConnection() (io.Closer, error) {
-    id := atomic.AddInt32(&amp;amp;resourceInt, 1) // 原子方法
-    log.Println(&quot;createConn:id=&quot;, id)
-
-    return &amp;amp;dbConn{
-        ID: atomic.AddInt32(&amp;amp;id, 1),
-    }, nil
-}
-
-func main() {
-    var wg sync.WaitGroup
-    wg.Add(maxGoroutines)
-
-    p, err := pool.New(createConnection, poolResources)
-    if err != nil {
-        log.Fatalln(err)
-    }
-
-    for query := 0; query &amp;lt; maxGoroutines; query++ {
-        go func(q int) {
-            selectQuery(q, p)
-            wg.Done()
-        }(query)
-    }
-
-    wg.Wait()
-
-    log.Println(&quot;close pool&quot;)
-    p.Close()
-}
-
-func selectQuery(q int, pool2 *pool.Pool) {
-    time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000)))
-    dbconn, err := pool2.Acquire()
-    if err != nil {
-        log.Println(&quot;acquire conn error:&quot;, err)
-    }
-
-    defer pool2.Release(dbconn)
-
-    time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000)))
-    log.Printf(&quot;Qin:%d.Cin%d&quot;, q, dbconn.(*dbConn).ID)
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1903,7 +1757,7 @@ func selectQuery(q int, pool2 *pool.Pool) {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">34</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1925,7 +1779,7 @@ func selectQuery(q int, pool2 *pool.Pool) {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -3,6 +3,23 @@
   
     
     <entry>
+      <title>centos7用户最大进程限制导致的问题排查</title>
+      <link href="/2019/07/24/centos7%E7%94%A8%E6%88%B7%E6%9C%80%E5%A4%A7%E8%BF%9B%E7%A8%8B%E9%99%90%E5%88%B6%E5%AF%BC%E8%87%B4%E7%9A%84%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/"/>
+      <url>/2019/07/24/centos7%E7%94%A8%E6%88%B7%E6%9C%80%E5%A4%A7%E8%BF%9B%E7%A8%8B%E9%99%90%E5%88%B6%E5%AF%BC%E8%87%B4%E7%9A%84%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
+      <content type="html"><![CDATA[<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><blockquote><p>/etc/security/limits.d/90-nproc.conf 与 /etc/security/limits.conf 都是系统用户资源配置文件</p></blockquote><p>/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/etc/security/limits.d/90-nproc.conf配置上限影响的。</p><blockquote></blockquote><p>一般系统普通用户进程数满了都是修改/etc/security/limits.d/90-nproc.conf文件。</p><h2 id="排查过程"><a href="#排查过程" class="headerlink" title="排查过程"></a>排查过程</h2><h3 id="服务器报错"><a href="#服务器报错" class="headerlink" title="服务器报错"></a>服务器报错</h3><blockquote><p> ErrorException: proc_open(): fork failed - Resource temporarily unavailable </p></blockquote><p>首先查看资源使用情况</p><ul><li><code>top</code>查看服务器资源大概使用情况，cpu、内存 正常。</li><li><code>ps -ef|wc -l</code>进一步查看当前用户下的进程数量在<b>1024</b> 左右</li></ul><p>初步判断是用户最大进程数限制</p><ul><li><code>ulimit -a</code> 查看用户最大进程配置 是 31207</li></ul><blockquote><p>max user processes              (-u) 31207</p></blockquote><p>很迷惑 ！？？明明数量没限制为什么进程一直在1024左右。</p><ul><li>google 查询相关问题</li></ul><p>最终发现 </p><blockquote><p>/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/etc/security/limits.d/90-nproc.conf配置上限影响的。</p></blockquote><p>修改<code>/etc/security/limits.d/90-nproc.conf</code>文件为</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*          soft    nproc     10240</span><br><span class="line">root       soft    nproc     unlimited</span><br></pre></td></tr></table></figure><p><b>解决问题</b></p>]]></content>
+      
+      
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> 最大进程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>centos7安装php7.3.6记录</title>
       <link href="/2019/07/02/centos7%E5%AE%89%E8%A3%85php7-3-6%E8%AE%B0%E5%BD%95/"/>
       <url>/2019/07/02/centos7%E5%AE%89%E8%A3%85php7-3-6%E8%AE%B0%E5%BD%95/</url>
@@ -460,9 +477,9 @@
       
         <tags>
             
-            <tag> php </tag>
-            
             <tag> Laravel </tag>
+            
+            <tag> php </tag>
             
             <tag> queue </tag>
             
@@ -715,9 +732,9 @@
       
         <tags>
             
-            <tag> php </tag>
-            
             <tag> Laravel </tag>
+            
+            <tag> php </tag>
             
         </tags>
       

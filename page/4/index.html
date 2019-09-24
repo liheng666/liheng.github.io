@@ -379,7 +379,8 @@
           
           搜索： brew search mysql
 查询：brew info mysql 主要看具体的信息，比如目前的版本，依赖，安装后注意事项等
-更新：br
+更新：brew update 这会更新 Homebrew 自己，并且使得接下来的两个操作有意义——
+检查过时（是否有新版本）：brew outdated 这回列
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -527,7 +528,7 @@
       
         
           
-          学习笔记判断两个文件是否一致 并打印出第一个不同行12345678910111213141516171819202122232425262728293
+          学习笔记判断两个文件是否一致 并打印出第一个不同行1234567891011121314151617181920212223242526272829303132333435363738394041424344#include &lt;stdio.h&gt;;#include &lt;string.h
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -675,8 +676,9 @@
       
         
           
-          select * from table order by case field when field=2 then 1 else 0 end, fie
-          ...
+          select * from table order by case field when field=2 then 1 else 0 end, field desc;
+【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；
+          
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/06/18/order by case when 的用法/#more" rel="contents">

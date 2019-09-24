@@ -382,7 +382,12 @@
 import (
     &quot;sync&quot;
     &quot;io&quot;
-    &qu
+    &quot;errors&quot;
+    &quot;log&quot;
+)
+
+type Pool struct {
+    m         syn
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -535,7 +540,12 @@ import (
 import (
     &quot;os&quot;
     &quot;time&quot;
-    &quot;er
+    &quot;errors&quot;
+    &quot;os/signal&quot;
+    &quot;log&quot;
+)
+
+type Runner str
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -695,7 +705,7 @@ import (
         
           
           无向图–go语言实现（持续更新）
-在许多计算机应用中，由相连的结点所表示的模型起到了关键的作用。这些结点之间的连接很 自然地会让人们产生一连串的疑问:
+在许多计算机应用中，由相连的结点所表示的模型起到了关键的作用。这些结点之间的连接很 自然地会让人们产生一连串的疑问:沿着这些连接能否从一个结点到达另一个结点?有多少个结点 和指定的结点相连?两个结点之间最短的连接是哪一条?  要描述这些问题，我们要使用一种抽象的数学
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -845,7 +855,8 @@ import (
           
           Date.prototype.Format = function (fmt) {  
         var o = {
-            &q
+            &quot;M+&quot;: this.getMonth() + 1, //月份 
+            &quot;d+&quot;: this.g
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1005,7 +1016,10 @@ import (
         
           
           1 mysql 重复插入问题
-业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生
+业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建
+
+解决方式添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。
+2 m
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1154,7 +1168,11 @@ import (
         
           
           Laravel中使用elasticsearch实现全文搜索
-项目中要做搜索,欲采用Laravel+Scout扩展 +elasticsearch来实现，
+项目中要做搜索,欲采用Laravel+Scout扩展 +elasticsearch来实现，特记录备用
+
+elastic安装
+官网下载5.6.4版本zip文件，解压到目标目录，运行需要Java1.8运行环境。
+安装分词扩展ik，在elasti
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1307,7 +1325,13 @@ import (
 import (
     &quot;log&quot;
     &quot;os&quot;
-    &quot;io/
+    &quot;io/ioutil&quot;
+    &quot;io&quot;
+)
+
+var (
+    Trace   *log.Logger
+    Info  
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1620,7 +1644,9 @@ import (
           
           插入排序、希尔排序、堆排序、归并排序 –c语言实现逐渐添加中….
 #include &amp;lt;stdio.h&amp;gt;
-#include 
+#include &amp;lt;stdlib.h&amp;gt;
+#define LeftChild(i) (2 * (i) + 1)
+#define FatalEr
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1769,7 +1795,9 @@ import (
         
           
           Avl 平衡树 实现记录
-Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点
+Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。
+
+需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果
           ...
           <!--noindex-->
           <div class="post-button text-center">

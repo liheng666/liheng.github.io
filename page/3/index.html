@@ -377,7 +377,8 @@
       
         
           
-          （内容来自网络，备用）virtualenv 是一个创建隔绝的Python环境的 工具。virtualenv创建一个包含所有必要的可执行文件的文件夹，用
+          （内容来自网络，备用）virtualenv 是一个创建隔绝的Python环境的 工具。virtualenv创建一个包含所有必要的可执行文件的文件夹，用来使用Python工程所需的包。通过pip安装virtualenv：$ pip install virtualenv
+测试你的安装$ virtuale
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -678,7 +679,8 @@ http://mirrors.aliyun.com/pypi/simple
         
           
           问题公司项目使用Laravel的开发的两个项目在同一个测试服务器部署，公用同一个redis。在使用laravel中的队列时，产生冲突干扰。
-查找问题原
+查找问题原因在laravel 队列的操作类Illuminate\Queue\RedisQueue.php中可以看到pushRaw()方法：
+// 将一任务推入队
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -826,7 +828,8 @@ http://mirrors.aliyun.com/pypi/simple
       
         
           
-          Golang 支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。Mac 下编译 Linux 和 Windo
+          Golang 支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。Mac 下编译 Linux 和 Windows 64位可执行程序
+12CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build CGO_ENABLED=0 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -985,7 +988,7 @@ http://mirrors.aliyun.com/pypi/simple
       
         
           
-          数据结构与算法分析 笔记searchtree.c123456789101112131415161718192021222324252627282930
+          数据结构与算法分析 笔记searchtree.c123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1145,7 +1148,10 @@ http://mirrors.aliyun.com/pypi/simple
         
           
           #include &quot;list.c&quot;
-#define FatalError(str) fprintf(stderr, &quot;%
+#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str),exit(1);
+void PrintLots(List L, List P)
+{
+    Position Lnex
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1306,7 +1312,10 @@ http://mirrors.aliyun.com/pypi/simple
           
           #include &amp;lt;stdlib.h&amp;gt;
 #include &amp;lt;stdio.h&amp;gt;
-#include
+#include &amp;lt;string.h&amp;gt;
+// 栈操作数组实现
+typedef int ElementType;
+struct StackR
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1467,7 +1476,9 @@ http://mirrors.aliyun.com/pypi/simple
           
           #include &amp;lt;stdlib.h&amp;gt;
 #include &amp;lt;stdio.h&amp;gt;
-#define 
+#define FatalError(str) fprintf(stderr, &quot;%s\\n&quot;, str),exit(1);
+
+#define E
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1618,7 +1629,9 @@ http://mirrors.aliyun.com/pypi/simple
           list.c
 #include &lt;stdio.h&gt;;
 #include &lt;stdlib.h&gt;;
-#define FatalEr
+#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str),exit(1);
+
+typedef int Eleme
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1767,7 +1780,8 @@ http://mirrors.aliyun.com/pypi/simple
         
           
           测试服务器中的磁盘满了，整理后使用，发现七牛获取token 出错
-array_key_exists() expects parameter 2 to 
+array_key_exists() expects parameter 2 to be array, null given
+经过排查发现，七牛会将从自己服务器中配置信息缓存在服务器的临时文件中。因为测试服务器磁盘满了，导致七牛的SD
           ...
           <!--noindex-->
           <div class="post-button text-center">

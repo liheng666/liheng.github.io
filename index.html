@@ -356,7 +356,9 @@
         
           
           知识点
-/etc/security/limits.d/90-nproc.conf 与 /etc/security/limits.conf 都是系统用户
+/etc/security/limits.d/90-nproc.conf 与 /etc/security/limits.conf 都是系统用户资源配置文件
+
+/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/e
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -482,7 +484,7 @@
       
         
           
-          ./configure  –prefix=/opt/software/php-7.3.6 –sysconfdir=/opt/software/php-
+          ./configure  –prefix=/opt/software/php-7.3.6 –sysconfdir=/opt/software/php-7.3.6/etc –with-config-file-scan-dir=/opt/software/php-7.3.6/etc/ini –enabl
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -609,7 +611,8 @@
         
           
           需要注意的点ps: 解决过的问题记录下来，不能相信自己脑子的记忆力，很快就会忘记 😆
-解决excel标题为汉字时，解析有问题；将to_ascii设置
+解决excel标题为汉字时，解析有问题；将to_ascii设置为false
+1234567891011/*        |--------------------------------------------
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -736,7 +739,7 @@
         
           
           问题php服务器报错：
-ErrorException: file_get_contents(): SSL operation failed with 
+ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:error:14090086:SSL routines:SSL3_GET_SERVER_
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -863,7 +866,9 @@ ErrorException: file_get_contents(): SSL operation failed with
         
           
           X-Forwarded-For
-X-Forwarded-For（XFF）是用来识别通过HTTP代理或负载均衡方式连接到Web服务器的客户端最原始的IP
+X-Forwarded-For（XFF）是用来识别通过HTTP代理或负载均衡方式连接到Web服务器的客户端最原始的IP地址的HTTP请求头字段。 Squid 缓存代理服务器的开发人员最早引入了这一HTTP头字段，并由IETF在HTTP头字段标准化草案中正式提出。
+
+相
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -991,7 +996,8 @@ X-Forwarded-For（XFF）是用来识别通过HTTP代理或负载均衡方式连�
           
           需求是：从数据库中随机取出符合条件的几条数据;
 可使用下面来随机获取5条数据
-select * from table order by rand() 
+select * from table order by rand() limit 5 
+需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1121,7 +1127,7 @@ select * from table order by rand()
 centos7系统
 
 1. 检查系统是否已安装java环境：java -version2. elk官网下载解压配置启动
-使用默认配
+使用默认配置启动es ./bin/elasticsearch &amp; 测试是否启动成功 curl &#39;http://localhost:9200/?p
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1277,7 +1283,11 @@ centos7系统
 
 生成配置文件
 
-1
+1echo_supervisord_conf &gt; /etc/supervisord.conf
+
+创建目录, 并引入目录配置
+
+1mkdir -p 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1426,7 +1436,7 @@ centos7系统
         
           
           安装12yum install libreofficeyum install libreoffice-headless
-php-fpm 调用123//
+php-fpm 调用123// $path 目标路径、name_fix 源文件路径 $shell_str = &quot;export HOME=/tmp/ &amp;&amp; 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1579,7 +1589,12 @@ php-fpm 调用123//
 import &quot;sync&quot;
 
 // 协程工作池接口，使用工作池的work必须实现该接口
-t
+type Worker interface {
+    Task()
+}
+
+// 工作池结构，work为无缓存管道，wg控制纤程执行完成
+type Po
           ...
           <!--noindex-->
           <div class="post-button text-center">

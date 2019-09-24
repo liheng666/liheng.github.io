@@ -355,41 +355,16 @@
       
         
           
-            <h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><blockquote>
-<p>/etc/security/limits.d/90-nproc.conf 与 /etc/security/limits.conf 都是系统用户资源配置文件</p>
-</blockquote>
-<p>/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/etc/security/limits.d/90-nproc.conf配置上限影响的。</p>
-<blockquote>
-</blockquote>
-<p>一般系统普通用户进程数满了都是修改/etc/security/limits.d/90-nproc.conf文件。</p>
-<h2 id="排查过程"><a href="#排查过程" class="headerlink" title="排查过程"></a>排查过程</h2><h3 id="服务器报错"><a href="#服务器报错" class="headerlink" title="服务器报错"></a>服务器报错</h3><blockquote>
-<p> ErrorException: proc_open(): fork failed - Resource temporarily unavailable </p>
-</blockquote>
-<p>首先查看资源使用情况</p>
-<ul>
-<li><code>top</code>查看服务器资源大概使用情况，cpu、内存 正常。</li>
-<li><code>ps -ef|wc -l</code>进一步查看当前用户下的进程数量在<b>1024</b> 左右</li>
-</ul>
-<p>初步判断是用户最大进程数限制</p>
-<ul>
-<li><code>ulimit -a</code> 查看用户最大进程配置 是 31207</li>
-</ul>
-<blockquote>
-<p>max user processes              (-u) 31207</p>
-</blockquote>
-<p>很迷惑 ！？？明明数量没限制为什么进程一直在1024左右。</p>
-<ul>
-<li>google 查询相关问题</li>
-</ul>
-<p>最终发现 </p>
-<blockquote>
-<p>/etc/security/limits.conf 配置文件可限制文件打开数，系统进程等资源，在该文件配置中写的最大用户进程数是受/etc/security/limits.d/90-nproc.conf配置上限影响的。</p>
-</blockquote>
-<p>修改<code>/etc/security/limits.d/90-nproc.conf</code>文件为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*          soft    nproc     10240</span><br><span class="line">root       soft    nproc     unlimited</span><br></pre></td></tr></table></figure>
-<p><b>解决问题</b></p>
-
-          
+          知识点
+/etc/security/limits.d/90-nproc.conf 与 /etc/security/limits.conf 都是系统用户
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/07/24/centos7用户最大进程限制导致的问题排查/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -507,18 +482,15 @@
       
         
           
-            <p>./configure  –prefix=/opt/software/php-7.3.6 –sysconfdir=/opt/software/php-7.3.6/etc –with-config-file-scan-dir=/opt/software/php-7.3.6/etc/ini –enable-fpm –with-fpm-user= –with-fpm-group= –enable-mysqlnd –with-mysqli=mysqlnd –with-pdo-mysql=mysqlnd –enable-mysqlnd-compression-support –with-iconv-dir –with-freetype-dir –with-jpeg-dir –with-png-dir –with-zlib –with-zlib-dir –enable-libxml –with-libxml-dir –enable-xml –disable-rpath –enable-bcmath –enable-shmop –enable-sysvsem –enable-inline-optimization –with-curl –enable-mbregex –enable-mbstring –enable-intl –enable-ftp –with-gd –enable-gd-jis-conv –with-openssl –with-mhash –enable-pcntl –enable-sockets –with-xmlrpc –enable-zip –enable-soap –with-gettext –disable-fileinfo –enable-opcache=no –with-pear –enable-maintainer-zts –with-ldap=shared –enable-pdo –enable-sysvshm –with-xpm-dir –enable-session –enable-ctype –without-gdbm</p>
-<h3 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h3><blockquote>
-<p>configure: error: Please reinstall the libzip distribution</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#下载编译安装</span><br><span class="line">wget https://nih.at/libzip/libzip-1.2.0.tar.gz</span><br><span class="line">tar -zxvf libzip-1.2.0.tar.gz</span><br><span class="line">cd libzip-1.2.0</span><br><span class="line">./configure</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
-<h3 id="报错-1"><a href="#报错-1" class="headerlink" title="报错"></a>报错</h3><p>configure: error: off_t undefined; check your library configuration</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#添加搜索路径到配置文件</span><br><span class="line">echo &apos;/usr/local/lib64</span><br><span class="line">/usr/local/lib</span><br><span class="line">/usr/lib</span><br><span class="line">/usr/lib64&apos;&gt;&gt;/etc/ld.so.conf</span><br><span class="line"></span><br><span class="line">#然后 更新配置</span><br><span class="line">ldconfig -v</span><br></pre></td></tr></table></figure>
-<h3 id="make-ext-zip-php-zip-lo-错误-1"><a href="#make-ext-zip-php-zip-lo-错误-1" class="headerlink" title="make: *** [ext/zip/php_zip.lo] 错误 1"></a>make: *** [ext/zip/php_zip.lo] 错误 1</h3><p>cp /usr/local/lib/libzip/include/zipconf.h /usr/local/include/zipconf.h</p>
-<h2 id="添加配置文件"><a href="#添加配置文件" class="headerlink" title="添加配置文件"></a>添加配置文件</h2><p>cp php-fpm.conf.default php-fpm.conf<br>sudo cp ~/php-7.3.6/php.ini-production ./lib/php.ini</p>
-<h3 id="扩展目录"><a href="#扩展目录" class="headerlink" title="扩展目录"></a>扩展目录</h3><p>/opt/software/php-7.3.6/lib/php/extensions/no-debug-zts-20180731/</p>
-
-          
+          ./configure  –prefix=/opt/software/php-7.3.6 –sysconfdir=/opt/software/php-
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/07/02/centos7安装php7-3-6记录/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -636,11 +608,16 @@
       
         
           
-            <h2 id="需要注意的点"><a href="#需要注意的点" class="headerlink" title="需要注意的点"></a>需要注意的点</h2><p>ps: 解决过的问题记录下来，不能相信自己脑子的记忆力，很快就会忘记 😆</p>
-<p>解决excel标题为汉字时，解析有问题；将<code>to_ascii</code>设置为<code>false</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">        |--------------------------------------------------------------------------</span><br><span class="line">        | Sheet heading conversion</span><br><span class="line">        |--------------------------------------------------------------------------</span><br><span class="line">        |</span><br><span class="line">        | Convert headings to ASCII 将标题转换为ASCII</span><br><span class="line">        | Note: only applies to &apos;heading&apos; settings &apos;true&apos; &amp;&amp; &apos;slugged&apos;</span><br><span class="line">        |</span><br><span class="line">        */</span><br><span class="line"></span><br><span class="line">        &apos;to_ascii&apos;                =&gt; false,</span><br></pre></td></tr></table></figure>
-
-          
+          需要注意的点ps: 解决过的问题记录下来，不能相信自己脑子的记忆力，很快就会忘记 😆
+解决excel标题为汉字时，解析有问题；将to_ascii设置
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/18/laravel-excel使用记录/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -758,15 +735,16 @@
       
         
           
-            <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>php服务器报错：</p>
-<p>ErrorException: file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages:<br>error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</p>
-<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>查看<code>file_get_contents</code>函数文档发现警告⚠️</p>
-<blockquote>
-<p>Warning<br>使用 SSL 时，Microsoft IIS 会违反协议不发送close_notify标记就关闭连接。PHP 会在到达数据尾端时报告“SSL: Fatal Protocol Error”。 要解决此问题，error_reporting 应设定为降低级别至不包含警告。 PHP 4.3.7 及更高版本可以在使用 https:// 包装器打开流时检测出有问题的 IIS 服务器软件 并抑制警告。在使用 fsockopen() 创建 ssl:// 套接字时, 开发者需检测并抑制此警告。</p>
-</blockquote>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>根据文档说明添加</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error_reporting(E_ERROR | E_PARSE);</span><br><span class="line">$filePath = file_get_contents($image);</span><br></pre></td></tr></table></figure>
-          
+          问题php服务器报错：
+ErrorException: file_get_contents(): SSL operation failed with 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/16/记一次file-get-contents报错/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -884,34 +862,16 @@
       
         
           
-            <h2 id="X-Forwarded-For"><a href="#X-Forwarded-For" class="headerlink" title="X-Forwarded-For"></a>X-Forwarded-For</h2><blockquote>
-<p>X-Forwarded-For（XFF）是用来识别通过HTTP代理或负载均衡方式连接到Web服务器的客户端最原始的IP地址的HTTP请求头字段。 Squid 缓存代理服务器的开发人员最早引入了这一HTTP头字段，并由IETF在HTTP头字段标准化草案中正式提出。</p>
-</blockquote>
-<h3 id="相关-remote-addr"><a href="#相关-remote-addr" class="headerlink" title="相关 $remote_addr"></a>相关 $remote_addr</h3><blockquote>
-<p>是nginx与客户端进行TCP连接过程中，获得的客户端真实地址. Remote Address 无法伪造，因为建立 TCP 连接需要三次握手，如果伪造了源 IP，无法建立 TCP 连接，更不会有后面的 HTTP 请求</p>
-</blockquote>
-<h2 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h2><blockquote>
-<p>这一HTTP头一般格式如下:</p>
-</blockquote>
-<p>X-Forwarded-For: client1, proxy1, proxy2, proxy3</p>
-<blockquote>
-<p>其中的值通过一个 逗号+空格 把多个IP地址区分开, 最左边(client1)是最原始客户端的IP地址, 代理服务器每成功收到一个请求，就把请求来源IP地址【remote_addr】添加到右边。 在上面这个例子中，这个请求成功通过了三台代理服务器：proxy1, proxy2 及 proxy3。请求由client1发出，到达了proxy3(proxy3可能是请求的终点)。请求刚从client1中发出时，XFF是空的，请求被发往proxy1；通过proxy1的时候，client1被添加到XFF中，之后请求被发往proxy2;通过proxy2的时候，proxy1被添加到XFF中，之后请求被发往proxy3；通过proxy3时，proxy2被添加到XFF中，之后请求的的去向不明，如果proxy3不是请求终点，请求会被继续转发。</p>
-</blockquote>
-<p>鉴于伪造这一字段非常容易，应该谨慎使用X-Forwarded-For字段。正常情况下XFF中最后一个IP地址是最后一个代理服务器的IP地址, 这通常是一个比较可靠的信息来源</p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>1.使用nginx进行反向代理的时候设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br></pre></td></tr></table></figure>
-<p>这样ngixn会将请求来源IP<code>remote_addr</code>追加到<code>X-Forwarded-For</code>并用（, + 空格）隔开 。请求header中不存在X-Forwarded-For    则是<code>remote_addr</code></p>
-<p>2.在最前端的转发代理服务器中设置X-Forwarded-For,后端服务器程序从中获取客户端IP时,<strong>从后向前（防止伪造代理的IP）</strong>取X-Forwarded-For中最前端代理IP之前一个IP就是客户端的IP（和最前端代理进行tcp连接的真实IP）【如果使用了cdn，cdn的IP就是最前端IP】【如果没有使用代理服务器转发，直接使用<code>remote_addr</code>就可以】</p>
-<h2 id="nginx-proxy-pass和fastcgi-pass-的区别"><a href="#nginx-proxy-pass和fastcgi-pass-的区别" class="headerlink" title="nginx proxy_pass和fastcgi_pass 的区别"></a>nginx proxy_pass和fastcgi_pass 的区别</h2><p>proxy_pass是反向代理模块。</p>
-<p>fastcgi_pass是转发给 factcgi 后端处理。这种方式nginx只是web服务器，应用程序获取的<code>remote_addr</code>IP，就是请求到nginx的真实IP</p>
-<blockquote>
-<p>FastCGI全称 快速通用网关接口（FastCommonGatewayInterface）。</p>
-<p>FastCGI像是一个常驻(long-live)型的CGI，它可以一直执行着，只要激活后，不会每次都要花费时间去fork一次(这是CGI最为人诟病的fork-and-execute 模式)。它还支持分布式的运算, 即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。</p>
-</blockquote>
-<p>FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。众所周知，CGI解释器的反复加载是CGI性能低下的主要原因，如果CGI解释器保持在内存中并接受FastCGI进程管理器调度，则可以提供良好的性能、伸缩性、Fail- Over特性等等。</p>
-<p>php-fmp 就是FastCGI的实现。</p>
-
-          
+          X-Forwarded-For
+X-Forwarded-For（XFF）是用来识别通过HTTP代理或负载均衡方式连接到Web服务器的客户端最原始的IP
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/15/web服务中获取客户端ip/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1029,15 +989,17 @@
       
         
           
-            <p>需求是：从数据库中随机取出符合条件的几条数据;</p>
-<p>可使用下面来随机获取5条数据</p>
-<p><code>select * from table order by rand() limit 5</code> </p>
-<p>需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为<code>order by rand()</code>会整体排序，数据量比较大的时候速度很慢。</p>
-<blockquote>
-<p>经测试在50W条数据中随机取需要十几秒的时间。</p>
-</blockquote>
-
-          
+          需求是：从数据库中随机取出符合条件的几条数据;
+可使用下面来随机获取5条数据
+select * from table order by rand() 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/23/mysql中rand函数使用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1155,28 +1117,19 @@
       
         
           
-            <h1 id="elk日志监控搭建"><a href="#elk日志监控搭建" class="headerlink" title="elk日志监控搭建"></a>elk日志监控搭建</h1><blockquote>
-<p>centos7系统</p>
-</blockquote>
-<h2 id="1-检查系统是否已安装java环境：java-version"><a href="#1-检查系统是否已安装java环境：java-version" class="headerlink" title="1. 检查系统是否已安装java环境：java -version"></a>1. 检查系统是否已安装java环境：<code>java -version</code></h2><h2 id="2-elk官网下载解压"><a href="#2-elk官网下载解压" class="headerlink" title="2. elk官网下载解压"></a>2. <a href="https://www.elastic.co" target="_blank" rel="noopener">elk官网</a>下载解压</h2><h2 id="配置启动"><a href="#配置启动" class="headerlink" title="配置启动"></a>配置启动</h2><ol>
-<li>使用默认配置启动es <code>./bin/elasticsearch &amp;</code> 测试是否启动成功 <code>curl &#39;http://localhost:9200/?pretty&#39;</code></li>
-<li>配置 logstash，在config目录下穿件conf.d文件夹用来存放配置文件，启动 <code>./bin/logstash --path.settings ./config/ -f ./config/conf.d &amp;</code></li>
-<li>配置 filebeat 目录下的filebeat.yml文件，启动<code>nohup ./filebeat -e -c filebeat.yml &gt;/dev/null 2&gt;&amp;1 &amp;</code></li>
-<li>kibana 启动<code>./bin/kibana &amp;</code></li>
-<li>使用nginx对kibana反向代理、添加登录限制。</li>
-</ol>
-<h2 id="监控报警-kibana插件sentinl"><a href="#监控报警-kibana插件sentinl" class="headerlink" title="监控报警 kibana插件sentinl"></a>监控报警 kibana插件sentinl</h2><p>现在对应的sentinl版本<br>指定文件路径安装 <code>./kibana-plugin install file:///sentinl-v6.2.4.zip</code></p>
-<h2 id="kibana-配置nginx授权登录"><a href="#kibana-配置nginx授权登录" class="headerlink" title="kibana 配置nginx授权登录"></a>kibana 配置nginx授权登录</h2><ul>
-<li>安装密码生产工具 <code>yum install httpd-tools</code></li>
-<li>生成密码文件 <code>sudo htpasswd -bc /opt/nginx/conf/htpasswd.kibana admin admin</code></li>
-<li>配置nginx </li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> server &#123;</span><br><span class="line">   listen 5602;</span><br><span class="line">   server_name youname;       #主机名</span><br><span class="line"></span><br><span class="line">   location / &#123;</span><br><span class="line">       proxy_pass http://localhost:5601;</span><br><span class="line">       auth_basic &quot;Basic Authentication&quot;;</span><br><span class="line">       auth_basic_user_file &quot;/path/htpasswd.kibana&quot;; #密码文件位置</span><br><span class="line">       proxy_http_version 1.1;</span><br><span class="line">       proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">       proxy_set_header Connection &apos;upgrade&apos;;</span><br><span class="line">       proxy_set_header Host $host;</span><br><span class="line">       proxy_cache_bypass $http_upgrade;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>重启nginx</p>
-</li>
-</ul>
+          elk日志监控搭建
+centos7系统
 
-          
+1. 检查系统是否已安装java环境：java -version2. elk官网下载解压配置启动
+使用默认配
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/20/elk日志监控搭建/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1316,31 +1269,23 @@
       
         
           
-            <h1 id="Supervisor使用笔记"><a href="#Supervisor使用笔记" class="headerlink" title="Supervisor使用笔记"></a>Supervisor使用笔记</h1><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p> centos系统，使用root账户</p>
-<ul>
-<li>安装 </li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install supervisor</span><br></pre></td></tr></table></figure>
-<ul>
-<li>生成配置文件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo_supervisord_conf &gt; /etc/supervisord.conf</span><br></pre></td></tr></table></figure>
-<ul>
-<li>创建目录, 并引入目录配置</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/supervisor/conf.d</span><br></pre></td></tr></table></figure>
-<ul>
-<li>编辑/etc/supervisord.conf, 修改文件末尾的[include]下的files字段</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[include]</span><br><span class="line">files = /etc/supervisor/conf.d/*.conf</span><br></pre></td></tr></table></figure>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><ul>
-<li>配置需要监听的队列, 创建配置文件/etc/supervisor/conf.d/queue.conf</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[program:laravel-d3ingo] ;名称</span><br><span class="line">process_name=%(program_name)s_%(process_num)02d   ;自定义多进程名称</span><br><span class="line">command=php /opt/project/d3ingo-tool/artisan queue:work --queue=d3ingo --sleep=3 --tries=3 ;启动命令</span><br><span class="line">autostart=true   ;自动开启</span><br><span class="line">autorestart=true ;自动重启</span><br><span class="line">user=root        </span><br><span class="line">numprocs=2      ;进程数量</span><br><span class="line">redirect_stderr=true</span><br><span class="line">stdout_logfile=/etc/supervisor/logs/d3ingo.log  ;日志路径（必须提前创建好，不会自动创建）</span><br></pre></td></tr></table></figure>
-<h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">supervisord -c /etc/supervisord.conf</span><br><span class="line">supervisorctl</span><br></pre></td></tr></table></figure>
-<p>进入supervisorctl控制台 <code>start all</code></p>
+          Supervisor使用笔记安装 centos系统，使用root账户
 
-          
+安装 
+
+1pip install supervisor
+
+生成配置文件
+
+1
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/12/12/Supervisor使用笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1480,11 +1425,16 @@
       
         
           
-            <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install libreoffice</span><br><span class="line">yum install libreoffice-headless</span><br></pre></td></tr></table></figure>
-<h3 id="php-fpm-调用"><a href="#php-fpm-调用" class="headerlink" title="php-fpm 调用"></a>php-fpm 调用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// $path 目标路径、name_fix 源文件路径</span><br><span class="line"> $shell_str = &quot;export HOME=/tmp/ &amp;&amp; /usr/bin/libreoffice  --invisible --convert-to pdf --outdir $path $name_fix&quot;;</span><br><span class="line"> $result_str = exec($shell_str, $output, $return_var);</span><br></pre></td></tr></table></figure>
-<h3 id="可能出现转PDF之后-中文出现编程小方框"><a href="#可能出现转PDF之后-中文出现编程小方框" class="headerlink" title="可能出现转PDF之后 中文出现编程小方框"></a>可能出现转PDF之后 中文出现编程小方框</h3><p>拷贝中文常用字体放入 linux系统字体中</p>
-
-          
+          安装12yum install libreofficeyum install libreoffice-headless
+php-fpm 调用123//
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/14/libreoffice把文档转换成PDF/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1624,52 +1574,20 @@
       
         
           
-            <h1 id="具体实现代码"><a href="#具体实现代码" class="headerlink" title="具体实现代码"></a>具体实现代码</h1><pre><code>package work
+          具体实现代码package work
 
 import &quot;sync&quot;
 
 // 协程工作池接口，使用工作池的work必须实现该接口
-type Worker interface {
-    Task()
-}
-
-// 工作池结构，work为无缓存管道，wg控制纤程执行完成
-type Pool struct {
-    work chan Worker
-    wg   sync.WaitGroup
-}
-
-// 创建一个指定纤程的worker池
-func New(maxGoroutines int) *Pool {
-    p := &amp;amp;Pool{
-        work: make(chan Worker), // 初始化无缓存通道，用来存储work
-    }
-
-    p.wg.Add(maxGoroutines)
-
-    for i := 0; i &amp;lt; maxGoroutines; i++ {
-        go func() {
-            for w := range p.work { // 使用range从通道中取work，当通道中没有值时堵塞，通道关闭时循环结束
-                w.Task()
-            }
-            p.wg.Done()
-        }()
-    }
-    return p
-}
-
-// 运行一个worker
-func (p *Pool) Run(w Worker) {
-    p.work &amp;lt;- w // 向通道中写入worker,如有空闲纤程将运行，如暂无空闲纤程将堵塞
-}
-
-// 关闭worker池
-func (p *Pool) Shutdown() {
-    close(p.work) // 关闭通道，各纤程执行完当前任务各自退出
-    p.wg.Wait()   // 等待所有纤程运行完毕
-}
-</code></pre>
-          
+t
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/02/go-e5-8d-8f-e7-a8-8b-e6-b1-a0-e5-ae-9e-e7-8e-b0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

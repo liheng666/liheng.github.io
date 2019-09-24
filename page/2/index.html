@@ -377,165 +377,20 @@
       
         
           
-            <h1 id="资源池实现"><a href="#资源池实现" class="headerlink" title="资源池实现"></a>资源池实现</h1><pre><code>package pool
+          资源池实现package pool
 
 import (
     &quot;sync&quot;
     &quot;io&quot;
-    &quot;errors&quot;
-    &quot;log&quot;
-)
-
-type Pool struct {
-    m         sync.Mutex
-    resources chan io.Closer
-    factory   func() (io.Closer, error)
-    closed    bool
-}
-
-// 资源池已关闭错误提示
-var ErrPoolClosed = errors.New(&quot;pool has been closed&quot;)
-
-func New(fn func() (io.Closer, error), size uint) (*Pool, error) {
-    if size &amp;lt;= 0 {
-        return nil, errors.New(&quot;pool size too small&quot;)
-    }
-
-    return &amp;amp;Pool{
-        resources: make(chan io.Closer, size),
-        factory:   fn,
-    }, nil
-}
-
-// 获取一个资源
-func (p *Pool) Acquire() (resource io.Closer, err error) {
-    select {
-    case r, ok := &amp;lt;-p.resources:
-        log.Println(&quot;Acquire:&quot;, &quot;shared resource&quot;)
-        if !ok {
-            return nil, ErrPoolClosed
-        }
-        return r, nil
-    default:
-        log.Println(&quot;Acquire:&quot;, &quot;new resource&quot;)
-        return p.factory()
-    }
-}
-
-// 释放资源回池
-func (p *Pool) Release(r io.Closer) {
-    p.m.Lock()
-    defer p.m.Unlock()
-
-    if p.closed {
-        r.Close()
-        return
-    }
-
-    select {
-    case p.resources &amp;lt;- r:
-        log.Println(&quot;Release:&quot;, &quot;in queue&quot;)
-    default:
-        log.Println(&quot;Release:&quot;, &quot;closeing&quot;)
-        r.Close()
-    }
-}
-
-// 关闭资源池
-func (p *Pool) Close() {
-    p.m.Lock()
-    defer p.m.Unlock()
-
-    if p.closed {
-        return
-    }
-
-    p.closed = true
-    close(p.resources)
-
-    for r := range p.resources {
-        r.Close()
-    }
-}
-
-`&lt;/pre&gt;
-
-# 测试
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package main
-
-import (
-    &quot;log&quot;
-    &quot;io&quot;
-    &quot;sync/atomic&quot;
-    &quot;mypackages/pool&quot;
-    &quot;sync&quot;
-    &quot;time&quot;
-    &quot;math/rand&quot;
-)
-
-const (
-    maxGoroutines = 200 // 最大协程数
-    poolResources = 10  //资源池资源数
-)
-
-type dbConn struct {
-    ID int32
-}
-
-func (d *dbConn) Close() error {
-    log.Println(&quot;close connection:&quot;, d.ID)
-    return nil
-}
-
-var resourceInt int32
-
-// 创建连接工厂函数
-func createConnection() (io.Closer, error) {
-    id := atomic.AddInt32(&amp;amp;resourceInt, 1) // 原子方法
-    log.Println(&quot;createConn:id=&quot;, id)
-
-    return &amp;amp;dbConn{
-        ID: atomic.AddInt32(&amp;amp;id, 1),
-    }, nil
-}
-
-func main() {
-    var wg sync.WaitGroup
-    wg.Add(maxGoroutines)
-
-    p, err := pool.New(createConnection, poolResources)
-    if err != nil {
-        log.Fatalln(err)
-    }
-
-    for query := 0; query &amp;lt; maxGoroutines; query++ {
-        go func(q int) {
-            selectQuery(q, p)
-            wg.Done()
-        }(query)
-    }
-
-    wg.Wait()
-
-    log.Println(&quot;close pool&quot;)
-    p.Close()
-}
-
-func selectQuery(q int, pool2 *pool.Pool) {
-    time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000)))
-    dbconn, err := pool2.Acquire()
-    if err != nil {
-        log.Println(&quot;acquire conn error:&quot;, err)
-    }
-
-    defer pool2.Release(dbconn)
-
-    time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000)))
-    log.Printf(&quot;Qin:%d.Cin%d&quot;, q, dbconn.(*dbConn).ID)
-}
-</code></pre>
-          
+    &qu
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/25/go-pool-e8-b5-84-e6-ba-90-e6-b1-a0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -675,117 +530,20 @@ func selectQuery(q int, pool2 *pool.Pool) {
       
         
           
-            <pre><code>package main
+          package main
 
 import (
     &quot;os&quot;
     &quot;time&quot;
-    &quot;errors&quot;
-    &quot;os/signal&quot;
-    &quot;log&quot;
-)
-
-type Runner struct {
-    interrupt chan os.Signal   //操作系统信号
-    complete  chan error       // 运行完成时返回信息
-    timeout   &amp;lt;-chan time.Time // 超时单向通道
-    tasks     []func(int)      // 存储方法切片
-}
-
-//超时返回信息
-var ErrTimeout = errors.New(&quot;received timeout&quot;)
-//系统中终止返回信息
-var ErrInterrupt = errors.New(&quot;received Interrupt&quot;)
-
-//Runner生成方法
-// os.Signal 系统信息接口
-// func After(d Duration) &amp;lt;-chan Time After会在另一线程经过时间段d后向返回值发送当时的时间
-func New(d time.Duration) *Runner {
-    return &amp;amp;Runner{
-        interrupt: make(chan os.Signal, 1),
-        complete:  make(chan error),
-        timeout:   time.After(d),
-    }
-}
-
-//向runner中添加需要运行的方法
-func (r *Runner) Add(tasks ...func(int)) {
-    r.tasks = append(r.tasks, tasks...)
-}
-
-//执行添加的每一个任务
-func (r *Runner) run() error {
-    for id, task := range r.tasks {
-        if r.gotInterrupt() {
-            return ErrInterrupt
-        }
-        task(id)
-    }
-
-    return nil
-}
-
-//验证是否收到系统中断信号
-func (r *Runner) gotInterrupt() bool {
-    select {
-    case &amp;lt;-r.interrupt:
-        signal.Stop(r.interrupt)
-        return true
-
-    default:
-        return false
-    }
-}
-
-// 执行所有任务，监听通道
-// func Notify(c chan&amp;lt;- os.Signal, sig ...os.Signal)
-// Notify函数让signal包将输入信号转发到c。如果没有列出要传递的信号，会将所有输入信号传递到c；否则只传递列出的输入信号。
-func (r *Runner) Start() error {
-    signal.Notify(r.interrupt, os.Interrupt)
-
-    go func() {
-        r.complete &amp;lt;- r.run()
-    }()
-
-    select {
-    case err := &amp;lt;-r.complete:
-        return err
-    case &amp;lt;-r.timeout:
-        return ErrTimeout
-    }
-}
-
-const timeout = 3 * time.Second
-
-func main() {
-    log.Println(&quot;starting work&quot;)
-
-    r := New(timeout)
-    r.Add(createWork(), createWork(), createWork(), createWork(), createWork(), createWork())
-    if err := r.Start(); err != nil {
-        switch err {
-        case ErrInterrupt:
-            log.Println(&quot;Terminating due to interrupt&quot;)
-            os.Exit(1)
-
-        case ErrTimeout:
-            log.Println(&quot;Terminating due to timeout&quot;)
-            os.Exit(2)
-        }
-    }
-
-    log.Println(&quot;run end!&quot;)
-}
-
-func createWork() func(int) {
-    return func(d int) {
-        log.Printf(&quot;work: %d start&quot;, d)
-        time.Sleep(time.Duration(d) * time.Second)
-        log.Printf(&quot;work %d end&quot;, d)
-    }
-}
-</code></pre>
-          
+    &quot;er
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/19/go-e9-80-9a-e9-81-93-e5-ae-9e-e7-8e-b0-e8-b6-85-e6-97-b6-e6-8e-a7-e5-88-b6-e3-80-81-e6-8e-a5-e6-94-b6-e7-b3-bb-e7-bb-9f-e9-80-80-e5-87-ba/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -936,259 +694,16 @@ func createWork() func(int) {
       
         
           
-            <h1 id="无向图–go语言实现（持续更新）"><a href="#无向图–go语言实现（持续更新）" class="headerlink" title="无向图–go语言实现（持续更新）"></a>无向图–go语言实现（持续更新）</h1><blockquote>
-<p>在许多计算机应用中，由相连的结点所表示的模型起到了关键的作用。这些结点之间的连接很 自然地会让人们产生一连串的疑问:沿着这些连接能否从一个结点到达另一个结点?有多少个结点 和指定的结点相连?两个结点之间最短的连接是哪一条?<br>  要描述这些问题，我们要使用一种抽象的数学对象，叫做图<br>      摘自《算法》</p>
-</blockquote>
-<h4 id="图的数据结构和基本操作"><a href="#图的数据结构和基本操作" class="headerlink" title="图的数据结构和基本操作"></a>图的数据结构和基本操作</h4><pre><code>package graph
-
-import (
-    &quot;container/list&quot;
-)
-
-// 图的数据结构
-type Graph struct {
-    v   int          // 顶点数
-    e   int          // 边数
-    adj []*list.List // 邻边链表切片
-}
-
-// 创建一个图
-func New(v int, e [][2]int) *Graph {
-    graph := new(Graph)
-    graph.v = v
-    graph.e = len(e)
-
-    var adj []*list.List
-
-    for i := 0; i &amp;lt; v; i++ {
-        adj = append(adj, list.New())
-    }
-    graph.adj = adj
-
-    for _, val := range e {
-        graph.AddEdge(val[0], val[1])
-    }
-    return graph
-}
-
-// 获取图的定点数量
-func (g *Graph) V() int {
-    return g.v
-}
-
-// 获取图中边的数量
-func (g *Graph) E() int {
-    return g.e
-}
-
-// 向图中添加一条边
-func (g *Graph) AddEdge(v int, w int) {
-    g.adj[v].PushFront(w)
-    g.adj[w].PushFront(v)
-}
-
-// 获取与顶点相通的其他顶点 返回一个链表
-func (g *Graph) Adj(v int) *list.List {
-    return g.adj[v]
-}
-
-`&lt;/pre&gt;
-
-#### 深度优先搜索
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
-
-/**
-深度优先搜索算法
- */
-
-type depth struct {
-    marked []bool
-    count  int
-}
-
-func NewDepth(g *Graph, s int) *depth {
-
-    depth := &amp;amp;depth{
-        marked: make([]bool, g.v),
-        count:  0,
-    }
-    depth.dfs(g, s)
-
-    return depth
-}
-
-// 利用递归实现图深度优先搜索
-func (d *depth) dfs(g *Graph, v int) {
-    d.marked[v] = true
-    d.count++
-
-    for e := g.Adj(v).Front(); e != nil; e = e.Next() {
-
-        w, _ := e.Value.(int)
-        if !d.marked[w] {
-            d.dfs(g, w)
-        }
-    }
-}
-
-// 判断传入的顶点是否与初始顶点相通
-func (d *depth) Marked(w int) bool {
-    return d.marked[w]
-}
-
-// 和初始顶点相通的顶点数量
-func (d *depth) Count() int {
-    return d.count
-}
-
-`&lt;/pre&gt;
-
-#### 深度优先搜索路径
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
-
-type Paths struct {
-    marked []bool
-    edgeTo []int
-    final  int
-}
-
-func NewPaths(graph *Graph, s int) *Paths {
-    paths := &amp;amp;Paths{
-        marked: make([]bool, graph.V()),
-        edgeTo: make([]int, graph.V()),
-        final:  s,
-    }
-    paths.dfs(graph, s)
-    return paths
-}
-
-func (p *Paths) dfs(graph *Graph, v int) {
-    p.marked[v] = true
-
-    for e := graph.Adj(v).Front(); e != nil; e = e.Next() {
-        w, _ := e.Value.(int)
-        if !p.marked[w] {
-            p.edgeTo[w] = v
-            p.dfs(graph, w)
-        }
-    }
-}
-
-func (p *Paths) HasPathTo(v int) bool {
-    return p.marked[v]
-}
-
-func (p *Paths) PathTo(v int) []int {
-    if !p.HasPathTo(v) {
-        return nil
-    }
-    path := make([]int, 0)
-    var x int
-    for x = v; x != p.final; x = p.edgeTo[x] {
-        path = append(path, x)
-    }
-    path = append(path, x)
-    return path
-}
-
-`&lt;/pre&gt;
-
-#### 广度优先搜索最短路径
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package graph
-
-import &quot;container/list&quot;
-
-/**
-*广度优先搜索
-*/
-
-type Breadth struct {
-    marked []bool
-    edgeTo []int
-    final  int
-}
-
-func NewBreadth(graph *Graph, s int) *Breadth {
-    breadth := &amp;amp;Breadth{
-        marked: make([]bool, graph.v),
-        edgeTo: make([]int, graph.v),
-        final:  s,
-    }
-    breadth.bfs(graph, s)
-
-    return breadth
-}
-
-func (b *Breadth) bfs(graph *Graph, s int) {
-    queue := list.New()
-    b.marked[s] = true
-    queue.PushBack(s)
-
-    for queue.Len() != 0 {
-        element := queue.Front()
-        v, _ := queue.Remove(element).(int)
-        for e := graph.Adj(v).Front(); e != nil; e = e.Next() {
-            val, _ := e.Value.(int)
-            if b.marked[val] == false {
-                b.marked[val] = true
-                b.edgeTo[val] = v
-                queue.PushBack(e.Value)
-            }
-        }
-    }
-
-}
-
-func (b *Breadth) HasPathTo(v int) bool {
-    return b.marked[v]
-}
-
-func (b *Breadth) Path(v int) []int {
-    if !b.HasPathTo(v) {
-        return nil
-    }
-    path := make([]int, 0)
-    for p := v; p != b.final;p = b.edgeTo[p] {
-        path = append(path,p)
-    }
-    path = append(path,b.final)
-
-    return path
-}
-
-`&lt;/pre&gt;
-
-#### 最后测试
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`package main
-
-import (
-    &quot;graph&quot;
-    &quot;fmt&quot;
-)
-
-func main() {
-    data := [][2]int{
-        {0, 1},
-        {1, 3},
-        {0, 3},
-    }
-    g := graph.New(4, data)
-
-    //depth := graph.NewDepth(g, 1)
-    //fmt.Println(depth.Marked(3))
-
-    //paths := graph.NewPaths(g, 0)
-    //fmt.Println(paths.PathTo(3))
-
-    paths := graph.NewBreadth(g, 0)
-    fmt.Println(paths.Path(3))
-}
-</code></pre>
-          
+          无向图–go语言实现（持续更新）
+在许多计算机应用中，由相连的结点所表示的模型起到了关键的作用。这些结点之间的连接很 自然地会让人们产生一连串的疑问:
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/20/e5-9b-be-e7-9a-84-e6-b7-b1-e5-ba-a6-e4-bc-98-e5-85-88-e6-90-9c-e7-b4-a2-go-e8-af-ad-e8-a8-80-e5-ae-9e-e7-8e-b0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1328,24 +843,17 @@ func main() {
       
         
           
-            <pre><code>Date.prototype.Format = function (fmt) {  
+          Date.prototype.Format = function (fmt) {  
         var o = {
-            &quot;M+&quot;: this.getMonth() + 1, //月份 
-            &quot;d+&quot;: this.getDate(), //日 
-            &quot;h+&quot;: this.getHours(), //小时 
-            &quot;m+&quot;: this.getMinutes(), //分 
-            &quot;s+&quot;: this.getSeconds(), //秒 
-            &quot;q+&quot;: Math.floor((this.getMonth() + 3) / 3), //季度 
-            &quot;S&quot;: this.getMilliseconds() //毫秒 
-        };
-        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + &quot;&quot;).substr(4 - RegExp.$1.length));
-        for (var k in o)
-        if (new RegExp(&quot;(&quot; + k + &quot;)&quot;).test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : ((&quot;00&quot; + o[k]).substr((&quot;&quot; + o[k]).length)));
-        return fmt;
-    };
-</code></pre><p>使用示例：<br><code>new Date().Formet(&quot;yyyy-MM-dd&quot;)</code></p>
-
-          
+            &q
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/28/js-e6-97-b6-e9-97-b4-e6-a0-bc-e5-bc-8f-e5-8c-96-e4-bb-a3-e7-a0-81-e7-89-87-e6-ae-b5/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1496,34 +1004,16 @@ func main() {
       
         
           
-            <h1 id="1-mysql-重复插入问题"><a href="#1-mysql-重复插入问题" class="headerlink" title="1 mysql 重复插入问题"></a>1 mysql 重复插入问题</h1><blockquote>
-<p>业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生重复创建</p>
-</blockquote>
-<h4 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h4><p>添加唯一索引或多列唯一索引，这样当有重复创建时数据库报错，交由程序处理。这种处理方式为乐观锁，适合冲突发生率比较低的情况。</p>
-<h1 id="2-mysql-set-update-并发脏读问题"><a href="#2-mysql-set-update-并发脏读问题" class="headerlink" title="2 mysql set update 并发脏读问题"></a>2 mysql set update 并发脏读问题</h1><blockquote>
-<p>对一条数据进行累加时常常先使用select语句查询，然后在查询的数值上加上一个数值，在update 更新回数据库。 这样操作在并发处理中会出现脏读问题，例如：两个进程同时处理相同一条数据，同时读取了当前的数值为200，进程1处理的比较快在2000的基础上加上了3000（2000 + 3000），更新回数据库（此时数据为5000），进程2也在原2000基础上加上了2000（2000 + 2000），也更新会数据库。最终数据库数值为4000，正确的应为2000+3000+2000=7000.</p>
-</blockquote>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>对数据加独占锁：</p>
-<p>共享锁（S）：SELECT * FROM table_name WHERE … LOCK IN SHARE MODE。</p>
-<p>排他锁（X)：SELECT * FROM table_name WHERE … FOR UPDATE。</p>
-<p>在这个问题中，我们采用排他锁对需要修改的数据加锁，这样在整个查询、修改的事务执行过程中，其他事务将无法读取数据，直到该事务处理完毕。这种操作方式为悲观锁。 将并行处理改为串行处理。</p>
-<h4 id="SQLAlchemy-的-Query-支持-select-…-for-update-share"><a href="#SQLAlchemy-的-Query-支持-select-…-for-update-share" class="headerlink" title="SQLAlchemy 的 Query 支持 select … for update / share ."></a>SQLAlchemy 的 Query 支持 select … for update / share .</h4><pre><code>session.Query(User).with_for_update().first()
-session.Query(User).with_for_update(read=True).first()
-`&lt;/pre&gt;
-
-完整形式是:
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`with_for_update(read=False, nowait=False, of=None)
-</code></pre><blockquote>
-<p>read</p>
-<p>  是标识加互斥锁还是共享锁. 当为 True 时, 即 for share 的语句, 是共享锁. 多个事务可以获取共享锁, 互斥锁只能一个事务获取. 有”多个地方”都希望是”这段时间我获取的数据不能被修改, 我也不会改”, 那么只能使用共享锁.</p>
-<p>  nowait</p>
-<p>  其它事务碰到锁, 是否不等待直接”报错”.</p>
-<p>  of</p>
-<p>  指明上锁的表, 如果不指明, 则查询中涉及的所有表(行)都会加锁.</p>
-</blockquote>
-
-          
+          1 mysql 重复插入问题
+业务需要先根据where条件查询，如有数据命中对其进行修改否则创建一条新的记录。实践中发现：该操作在遇到并发处理时会发生
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/26/e9-ab-98-e5-b9-b6-e5-8f-91-e4-b8-8b-e7-9a-84mysql-e9-97-ae-e9-a2-98/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1663,55 +1153,16 @@ session.Query(User).with_for_update(read=True).first()
       
         
           
-            <h1 id="Laravel中使用elasticsearch实现全文搜索"><a href="#Laravel中使用elasticsearch实现全文搜索" class="headerlink" title="Laravel中使用elasticsearch实现全文搜索"></a>Laravel中使用elasticsearch实现全文搜索</h1><blockquote>
-<p>项目中要做搜索,欲采用Laravel+Scout扩展 +elasticsearch来实现，特记录备用</p>
-</blockquote>
-<h2 id="elastic安装"><a href="#elastic安装" class="headerlink" title="elastic安装"></a>elastic安装</h2><ol>
-<li>官网下载5.6.4版本zip文件，解压到目标目录，运行需要Java1.8运行环境。<p></p></li>
-<li><p>安装分词扩展ik，在elasticsearch目录下执行命令</p>
-<pre><code>./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v5.6.4/elasticsearch-analysis-ik-5.6.4.zip
-</code></pre><p>`</p>
-</li>
-<li>查看安装的扩展列表<pre class="line-numbers prism-highlight" data-start="1">`./bin/elasticsearch-plugin list
-`</pre></li>
-<li>启动 <code>./bin/elasticsearch</code></li>
-<li><p>本地访问 <code>http://localhost:9200/?pretty</code> 查看启动成功</p>
-<h2 id="Laravel扩展"><a href="#Laravel扩展" class="headerlink" title="Laravel扩展"></a>Laravel扩展</h2><p></p><p>Laravel使用的5.4版本，使用官方Scout全文搜索扩展和针对Scout的elastic引擎laravel-scout-elastic,使用只需安装tamayo/laravel-scout-elastic，它会依赖下载Scout。</p>
-<pre class="line-numbers prism-highlight" data-start="1">`composer require tamayo/laravel-scout-elastic
-`</pre>
-
-<p>添加服务提供者</p>
-<pre class="line-numbers prism-highlight" data-start="1">`// config/app.php
-'providers' =&gt; [
-    ...
-    Laravel\Scout\ScoutServiceProvider::class,
-    ...
-    ScoutEngines\Elasticsearch\ElasticsearchProvider::class,
-],
-`</pre>
-
-<p>生成scout配置</p>
-<pre class="line-numbers prism-highlight" data-start="1">`php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
-`</pre>
-
-<p>添加Elastic引擎配置</p>
-<p><pre class="line-numbers prism-highlight" data-start="1">`// config/scout.php<br>// Set your driver to elasticsearch</pre></p>
-<pre><code>&apos;driver&apos; =&amp;gt; env(&apos;SCOUT_DRIVER&apos;, &apos;elasticsearch&apos;),
-// Elastic引擎配置
-&apos;elasticsearch&apos; =&amp;gt; [
-        //elastic索引名称
-    &apos;index&apos; =&amp;gt; env(&apos;ELASTICSEARCH_INDEX&apos;, &apos;laravel&apos;),
-    // elastic 访问地址
-    &apos;hosts&apos; =&amp;gt; [
-        env(&apos;ELASTICSEARCH_HOST&apos;, &apos;http://localhost&apos;),
-    ],
-],
-</code></pre></li>
-</ol>
-<p>至此前期准备配置就算完成了</p>
-<h2 id="Scout使用"><a href="#Scout使用" class="headerlink" title="Scout使用"></a>Scout使用</h2><p>具体Scout扩展的使用可查询<a href="https://d.laravel-china.org/docs/5.4/scout#pagination" target="_blank" rel="noopener">文档</a></p>
-
-          
+          Laravel中使用elasticsearch实现全文搜索
+项目中要做搜索,欲采用Laravel+Scout扩展 +elasticsearch来实现，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/21/laravelscoutelasticsearch-e5-ae-9e-e7-8e-b0-e5-85-a8-e6-96-87-e6-90-9c-e7-b4-a2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1851,57 +1302,20 @@ session.Query(User).with_for_update(read=True).first()
       
         
           
-            <pre><code>package main
+          package main
 
 import (
     &quot;log&quot;
     &quot;os&quot;
-    &quot;io/ioutil&quot;
-    &quot;io&quot;
-)
-
-var (
-    Trace   *log.Logger
-    Info    *log.Logger
-    Warning *log.Logger
-    Error   *log.Logger
-)
-
-func init() {
-    file, err := os.OpenFile(&quot;error.txt&quot;, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-    if err != nil {
-        log.Fatalln(&quot;Fatal to open error log file:&quot;, err)
-    }
-
-    Trace = log.New(ioutil.Discard,
-        &quot;Trace: &quot;,
-        log.Ldate|log.Ltime|log.Lshortfile)
-
-    Info = log.New(os.Stdout,
-        &quot;Info: &quot;,
-        log.Ldate|log.Ltime|log.Lshortfile)
-
-    Warning = log.New(os.Stdout,
-        &quot;Warning: &quot;,
-        log.Ldate|log.Ltime|log.Lshortfile)
-
-    Error = log.New(io.MultiWriter(file, os.Stderr),
-        &quot;Error: &quot;,
-        log.Ldate|log.Ltime|log.Lshortfile)
-}
-
-func main() {
-    Trace.Println(&quot;this is  Trace&quot;)
-
-    Info.Println(&quot;this is Info&quot;)
-
-    Warning.Println(&quot;this is Warning&quot;)
-
-    Error.Println(&quot;this is Errer&quot;)
-
-}
-</code></pre>
-          
+    &quot;io/
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/17/go-e6-a0-87-e5-87-86-e5-ba-93log-e4-bd-bf-e7-94-a8/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2041,12 +1455,19 @@ func main() {
       
         
           
-            <blockquote>
-<p>平时分析sql语句经常使用explain 查看执行情况，一些细节特详细记录用以备忘。</p>
-</blockquote>
-<p>发现简书有篇总结的很详细，偷个懒 😁<br><a href="http://www.jianshu.com/p/ea3fc71fdc45" target="_blank" rel="noopener">这是链接</a></p>
+          
+平时分析sql语句经常使用explain 查看执行情况，一些细节特详细记录用以备忘。
+
+发现简书有篇总结的很详细，偷个懒 😁这是链接
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/10/21/explain-e8-af-a6-e7-bb-86-e5-8f-82-e6-95-b0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2197,250 +1618,17 @@ func main() {
       
         
           
-            <h3 id="插入排序、希尔排序、堆排序、归并排序-–c语言实现"><a href="#插入排序、希尔排序、堆排序、归并排序-–c语言实现" class="headerlink" title="插入排序、希尔排序、堆排序、归并排序 –c语言实现"></a>插入排序、希尔排序、堆排序、归并排序 –c语言实现</h3><p>逐渐添加中….</p>
-<pre><code>#include &amp;lt;stdio.h&amp;gt;
-#include &amp;lt;stdlib.h&amp;gt;
-#define LeftChild(i) (2 * (i) + 1)
-#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str), exit(1);
-
-void IntertionSort(int data[], int n);
-void ShellSort(int data[], int n);
-void HeapSort(int data[], int n);
-void PercDown(int data[], int i, int n);
-void Swap(int *a, int *b);
-void MergeSort(int DataArray[], int n);
-void MSort(int DataArray[], int TmpArray[], int Left, int Right);
-void Merge(int DataArray[], int TmpArray[], int Left, int Center, int Right);
-
-int main()
-{
-    int n;
-    int data[] = {1, 5, 6, 2, 44, 7, 34, 67, 66};
-    // IntertionSort(data, sizeof(data) / sizeof(int));
-    // ShellSort(data, sizeof(data) / sizeof(int));
-    // HeapSort(data, sizeof(data) / sizeof(int));
-    MergeSort(data, sizeof(data) / sizeof(int));
-
-    for (n = 0; n &amp;lt; sizeof(data) / sizeof(int); n++)
-    {
-        printf(&quot;%d\n&quot;, data[n]);
-    }
-}
-
-// 插入排序 O(N²)
-void IntertionSort(int data[], int n)
-{
-    int k, j;
-    for (k = 1; k &amp;lt; n; k++)
-    {
-        int tmp = data[k];
-        for (j = k; j &amp;gt; 0 &amp;amp;&amp;amp; data[j - 1] &amp;gt; tmp; j--)
-        {
-            data[j] = data[j - 1];
-        }
-        data[j] = tmp;
-    }
-}
-
-// 希尔排序 O(N²)
-void ShellSort(int data[], int n)
-{
-    int i, j, increment, tmp;
-    for (increment = n / 2; increment &amp;gt; 0; increment /= 2)
-    {
-        for (i = increment; i &amp;lt; n; i++)
-        {
-            tmp = data[i];
-            for (j = i; j &amp;gt;= increment; j -= increment)
-            {
-                if (tmp &amp;lt; data[j - increment])
-                {
-                    data[j] = data[j - increment];
-                }
-                else
-                {
-                    break;
-                }
-            }
-            data[j] = tmp;
-        }
-    }
-}
-
-// 堆排序 复杂度:NlogN - O(N)
-void HeapSort(int data[], int n)
-{
-    int i;
-    for (i = n / 2; i &amp;gt;= 0; i--)
-    {
-        PercDown(data, i, n);
-    }
-    for (i = n - 1; i &amp;gt;= 0; i--)
-    {
-        Swap(&amp;amp;data[0], &amp;amp;data[i]);
-        PercDown(data, 0, i);
-    }
-}
-// 节点上虑
-void PercDown(int data[], int i, int n)
-{
-    int Tmp;
-    int Child;
-    for (Tmp = data[i]; LeftChild(i) &amp;lt; n; i = Child)
-    {
-        Child = LeftChild(i);
-        if (Child != n - 1 &amp;amp;&amp;amp; data[Child + 1] &amp;gt; data[Child])
-        {
-            Child++;
-        }
-        if (Tmp &amp;lt; data[Child])
-        {
-            data[i] = data[Child];
-        }
-        else
-        {
-            break;
-        }
-    }
-    data[i] = Tmp;
-}
-void Swap(int *a, int *b)
-{
-    int tmp;
-    tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
-// 归并排序 复杂度 O(NlogN)
-void MSort(int DataArray[], int TmpArray[], int Left, int Right)
-{
-    int Center;
-
-    if (Left &amp;lt; Right)
-    {
-        Center = (Left + Right) / 2;
-        MSort(DataArray, TmpArray, Left, Center);
-        MSort(DataArray, TmpArray, Center + 1, Right);
-        Merge(DataArray, TmpArray, Left, Center + 1, Right);
-    }
-}
-
-void MergeSort(int DataArray[], int n)
-{
-    int *TmpArray;
-    TmpArray = malloc(n * sizeof(int));
-    if (TmpArray != NULL)
-    {
-        MSort(DataArray, TmpArray, 0, n - 1);
-        free(TmpArray);
-    }
-    else
-    {
-        FatalError(&quot;not space TmpArray!!!&quot;);
-    }
-}
-void Merge(int DataArray[], int TmpArray[], int Left, int Center, int RightEnd)
-{
-    int i, LeftEnd, TmpPos, NumElements;
-    LeftEnd = Center - 1;
-    TmpPos = Left;
-    NumElements = RightEnd - Left + 1;
-
-    while (Left &amp;lt;= LeftEnd &amp;amp;&amp;amp; Center &amp;lt;= RightEnd)
-    {
-        if (DataArray[Left] &amp;lt; DataArray[Center])
-        {
-            TmpArray[TmpPos++] = DataArray[Left++];
-        }
-        else
-        {
-            TmpArray[TmpPos++] = DataArray[Center++];
-        }
-    }
-
-    while (Left &amp;lt;= LeftEnd)
-    {
-        TmpArray[TmpPos++] = DataArray[Left++];
-    }
-
-    while (Center &amp;lt;= RightEnd)
-    {
-        TmpArray[TmpPos++] = DataArray[Center++];
-    }
-
-    for (i = 0; i &amp;lt; NumElements; i++, RightEnd--)
-    {
-        DataArray[RightEnd] = TmpArray[RightEnd];
-    }
-}
-
-`&lt;/pre&gt;
-
-###### 快速排序
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`// 快速排序
-void QuickSort(int d[], int n)
-{
-    QSort(d, 0, n - 1);
-}
-
-void QSort(int d[], int left, int right)
-{
-    int median, i, j;
-
-    if (left + cutoff &amp;lt;= right)
-    {
-        median = Median3(d, left, right);
-        i = left;
-        j = right - 1;
-        for (;;)
-        {
-            while (d[++i] &amp;lt; median)
-            {
-            }
-            while (d[--j] &amp;gt; median)
-            {
-            }
-            if (i &amp;lt; j)
-                Swap(&amp;amp;d[i], &amp;amp;d[j]);
-            else
-                break;
-        }
-        Swap(&amp;amp;d[i], &amp;amp;d[right - 1]);
-        QSort(d, left, i - 1);
-        QSort(d, i + 1, right);
-    }
-    else
-    {
-        IntertionSort(d + left, right - left + 1);
-    }
-}
-
-int Median3(int d[], int left, int right)
-{
-    int median;
-
-    median = (left + right) / 2;
-    if (d[left] &amp;gt; d[median])
-    {
-        Swap(&amp;amp;d[left], &amp;amp;d[median]);
-    }
-    if (d[left] &amp;gt; d[right])
-    {
-        Swap(&amp;amp;d[left], &amp;amp;d[right]);
-    }
-    if (d[median] &amp;gt; d[right])
-    {
-        Swap(&amp;amp;d[median], &amp;amp;d[right]);
-    }
-
-    Swap(&amp;amp;d[median], &amp;amp;d[right - 1]);
-
-    return d[right - 1];
-}
-</code></pre>
-          
+          插入排序、希尔排序、堆排序、归并排序 –c语言实现逐渐添加中….
+#include &amp;lt;stdio.h&amp;gt;
+#include 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/26/e6-8e-92-e5-ba-8f-e7-ae-97-e6-b3-95-ef-bc-88-e6-8f-92-e5-85-a5-e6-8e-92-e5-ba-8f-e3-80-81-e5-b8-8c-e5-b0-94-e6-8e-92-e5-ba-8f-e3-80-81-e5-a0-86-e6-8e-92-e5-ba-8f-e3-80-81-e5-bd-92-e5-b9-b6-e6-8e-92/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2580,14 +1768,16 @@ int Median3(int d[], int left, int right)
       
         
           
-            <h3 id="Avl-平衡树-实现记录"><a href="#Avl-平衡树-实现记录" class="headerlink" title="Avl 平衡树 实现记录"></a>Avl 平衡树 实现记录</h3><p><img src="https://upload-images.jianshu.io/upload_images/4560878-e7826f024d26a1a8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
-<p>Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点）。插入数据和删除数据的时候对树进行平衡调整。</p>
-<blockquote>
-<p>需要注意：在删除树节点的操作中，要注意更新调整各节点中高度（Height）的值。Google搜索结果中看了前几个实现AvlTree的文章，基本都没考虑节点Height属性的更新。</p>
-</blockquote>
-<p>实现代码<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> &amp;lt;stdio.h&amp;gt;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> &amp;lt;stdlib.h&amp;gt;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FatalError(str) fprintf(stderr, <span class="meta-string">"%s\n"</span>, str), exit(1);</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> Error(str) FatalError(str);</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AvlNode</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AvlNode</span> *<span class="title">Position</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AvlNode</span> *<span class="title">AvlTree</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> ElementType;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AvlNode</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ElementType Element;</span><br><span class="line">    AvlTree Left;</span><br><span class="line">    AvlTree Right;</span><br><span class="line">    <span class="keyword">int</span> Height;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">AvlTree</span><br><span class="line">MakeEmpty(AvlTree T);</span><br><span class="line"><span class="function">Position <span class="title">Find</span><span class="params">(ElementType X, AvlTree T)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">FindMin</span><span class="params">(AvlTree T)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">FindMax</span><span class="params">(AvlTree T)</span></span>;</span><br><span class="line"><span class="function">AvlTree <span class="title">Insert</span><span class="params">(ElementType X, AvlTree T)</span></span>;</span><br><span class="line"><span class="function">ElementType <span class="title">Retrieve</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">Height</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">Max</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">SingleRotateWithLeft</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">SingleRotateWithRight</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">DoubleRotateWithLeft</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">DoubleRotateWithRight</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function">AvlTree <span class="title">Delete</span><span class="params">(Position P, AvlTree T)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printTree</span><span class="params">(AvlTree T)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">AvlTree <span class="title">MakeEmpty</span><span class="params">(AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        MakeEmpty(T-&amp;gt;Left);</span><br><span class="line">        MakeEmpty(T-&amp;gt;Right);</span><br><span class="line">        <span class="built_in">free</span>(T);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ElementType <span class="title">Retrieve</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> P-&amp;gt;Element;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">Find</span><span class="params">(ElementType X, AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (X &amp;lt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Find(X, T-&amp;gt;Left);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (X &amp;gt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Find(X, T-&amp;gt;Right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">FindMin</span><span class="params">(AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (T-&amp;gt;Left == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FindMin(T-&amp;gt;Left);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">FindMax</span><span class="params">(AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> (T-&amp;gt;Right != <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            T = T-&amp;gt;Right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">Height</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (P == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> P-&amp;gt;Height;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">Max</span><span class="params">(<span class="keyword">int</span> height1, <span class="keyword">int</span> height2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (height1 &amp;gt; height2)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> height1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> height2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">AvlTree <span class="title">Insert</span><span class="params">(ElementType X, AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        T = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct AvlNode));</span><br><span class="line">        <span class="keyword">if</span> (T == <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Error(<span class="string">"Error: out of space!!!"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            T-&amp;gt;Element = X;</span><br><span class="line">            T-&amp;gt;Left = T-&amp;gt;Right = <span class="literal">NULL</span>;</span><br><span class="line">            T-&amp;gt;Height = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (X &amp;lt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T-&amp;gt;Left = Insert(X, T-&amp;gt;Left);</span><br><span class="line">        <span class="keyword">if</span> (Height(T-&amp;gt;Left) - Height(T-&amp;gt;Right) == <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (X &amp;lt; T-&amp;gt;Left-&amp;gt;Element)</span><br><span class="line">            &#123;</span><br><span class="line">                T = SingleRotateWithLeft(T);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                T = DoubleRotateWithLeft(T);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        T-&amp;gt;Right = Insert(X, T-&amp;gt;Right);</span><br><span class="line">        <span class="keyword">if</span> (Height(T-&amp;gt;Right) - Height(T-&amp;gt;Left) == <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (X &amp;gt; T-&amp;gt;Right-&amp;gt;Element)</span><br><span class="line">            &#123;</span><br><span class="line">                T = SingleRotateWithRight(T);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                T = DoubleRotateWithRight(T);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T-&amp;gt;Height = Max(Height(T-&amp;gt;Left), Height(T-&amp;gt;Right)) + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 左单旋</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">SingleRotateWithLeft</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position K1;</span><br><span class="line">    K1 = P-&amp;gt;Left;</span><br><span class="line">    P-&amp;gt;Left = K1-&amp;gt;Right;</span><br><span class="line">    K1-&amp;gt;Right = P;</span><br><span class="line"></span><br><span class="line">    P-&amp;gt;Height = Max(Height(P-&amp;gt;Left), Height(P-&amp;gt;Right)) + <span class="number">1</span>;</span><br><span class="line">    K1-&amp;gt;Height = Max(Height(K1-&amp;gt;Left), P-&amp;gt;Height) + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> K1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 右单旋</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">SingleRotateWithRight</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position K1;</span><br><span class="line">    K1 = P-&amp;gt;Right;</span><br><span class="line">    P-&amp;gt;Right = K1-&amp;gt;Left;</span><br><span class="line">    K1-&amp;gt;Left = P;</span><br><span class="line"></span><br><span class="line">    P-&amp;gt;Height = Max(Height(P-&amp;gt;Left), Height(P-&amp;gt;Right)) + <span class="number">1</span>;</span><br><span class="line">    K1-&amp;gt;Height = Max(Height(K1-&amp;gt;Left), P-&amp;gt;Height) + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> K1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 左双旋</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">DoubleRotateWithLeft</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    P-&amp;gt;Left = SingleRotateWithRight(P-&amp;gt;Left);</span><br><span class="line">    <span class="keyword">return</span> SingleRotateWithLeft(P);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 右双旋</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> Position <span class="title">DoubleRotateWithRight</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    P-&amp;gt;Right = SingleRotateWithLeft(P-&amp;gt;Right);</span><br><span class="line">    <span class="keyword">return</span> SingleRotateWithRight(P);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除</span></span><br><span class="line"><span class="function">AvlTree <span class="title">Delete</span><span class="params">(Position P, AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position PMix;</span><br><span class="line">    Position Tmp;</span><br><span class="line">    <span class="keyword">if</span> (T != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (T-&amp;gt;Element &amp;gt; P-&amp;gt;Element)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// printf("34\n");</span></span><br><span class="line">            T-&amp;gt;Left = Delete(P, T-&amp;gt;Left);</span><br><span class="line">            T-&amp;gt;Height = Max(Height(T-&amp;gt;Right), Height(T-&amp;gt;Left)) + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (Height(T-&amp;gt;Right) - Height(T-&amp;gt;Left) == <span class="number">2</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (T-&amp;gt;Right-&amp;gt;Element &amp;lt; P-&amp;gt;Element)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">return</span>  SingleRotateWithRight(T);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">return</span> DoubleRotateWithRight(T);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (T-&amp;gt;Element &amp;lt; P-&amp;gt;Element)</span><br><span class="line">        &#123;</span><br><span class="line">            T-&amp;gt;Right = Delete(P, T-&amp;gt;Right);</span><br><span class="line"></span><br><span class="line">            T-&amp;gt;Height = Max(Height(T-&amp;gt;Right), Height(T-&amp;gt;Left)) + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (Height(T-&amp;gt;Left) - Height(T-&amp;gt;Right) == <span class="number">2</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (T-&amp;gt;Left-&amp;gt;Element &amp;gt; P-&amp;gt;Element)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">return</span> SingleRotateWithLeft(T);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">return</span>  DoubleRotateWithLeft(T);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (T-&amp;gt;Right != <span class="literal">NULL</span> &amp;amp;&amp;amp; T-&amp;gt;Left != <span class="literal">NULL</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (Height(T-&amp;gt;Right) &amp;gt; Height(T-&amp;gt;Left))</span><br><span class="line">                &#123;</span><br><span class="line">                    PMix = FindMin(T-&amp;gt;Right);</span><br><span class="line">                    T-&amp;gt;Element = PMix-&amp;gt;Element;</span><br><span class="line">                    T-&amp;gt;Right = Delete(PMix, T-&amp;gt;Right);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    PMix = FindMax(T-&amp;gt;Left);</span><br><span class="line">                    T-&amp;gt;Element = PMix-&amp;gt;Element;</span><br><span class="line">                    T-&amp;gt;Left = Delete(PMix, T-&amp;gt;Left);</span><br><span class="line">                &#125;</span><br><span class="line">                T-&amp;gt;Height = Max(Height(T-&amp;gt;Right), Height(T-&amp;gt;Left)) + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Tmp = P;</span><br><span class="line">                T = P-&amp;gt;Right ? P-&amp;gt;Right : P-&amp;gt;Left;</span><br><span class="line">                <span class="built_in">free</span>(Tmp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printTree</span><span class="params">(AvlTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        printTree(T-&amp;gt;Left);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d"</span>, T-&amp;gt;Element);</span><br><span class="line">        printTree(T-&amp;gt;Right);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i,n;</span><br><span class="line">    AvlTree T;</span><br><span class="line">    Position P;</span><br><span class="line">    n = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &amp;lt; n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        T = Insert(i, T);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    printTree(T);</span><br><span class="line">    P = Find(<span class="number">4</span>, T);</span><br><span class="line">    T = Delete(P, T);</span><br><span class="line"></span><br><span class="line">    P = Find(<span class="number">5</span>, T);</span><br><span class="line">    T = Delete(P, T);</span><br><span class="line"></span><br><span class="line">    P = Find(<span class="number">17</span>, T);</span><br><span class="line">    T = Delete(P, T);</span><br><span class="line"></span><br><span class="line">    T = Insert(<span class="number">5</span>, T);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    printTree(T);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"根节点的高度：%d\n"</span>, T-&amp;gt;Height);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"根节点的值：%d\n"</span>,T-&amp;gt;Element);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    test();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
-          
+          Avl 平衡树 实现记录
+Avl平衡二叉树和搜索二叉树基本实现原理相同，在搜索二叉树的基础上添加树平衡的操作–单旋和双旋（这也是AvlTree的重难点
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/03/Avl平衡树-C语言实现/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

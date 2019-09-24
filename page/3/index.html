@@ -377,23 +377,15 @@
       
         
           
-            <h4 id="（内容来自网络，备用）"><a href="#（内容来自网络，备用）" class="headerlink" title="（内容来自网络，备用）"></a>（内容来自网络，备用）</h4><p><a href="http://pypi.python.org/pypi/virtualenv" target="_blank" rel="noopener">virtualenv</a> 是一个创建隔绝的Python环境的 工具。virtualenv创建一个包含所有必要的可执行文件的文件夹，用来使用Python工程所需的包。<br>通过pip安装virtualenv：<br>$ <code>pip install virtualenv</code></p>
-<p>测试你的安装<br>$ <code>virtualenv --version</code></p>
-<p>基本使用<a href="http://pythonguidecn.readthedocs.io/zh/latest/dev/virtualenvs.html#id3" target="_blank" rel="noopener"></a><br>为一个工程创建一个虚拟环境：</p>
-<p>$ cd <code>my_project_folder$ virtualenv my_project</code></p>
-<p>virtualenv my_project<br> 将会在当前的目录中创建一个文件夹，包含了Python可执行文件， 以及 pip<br> 库的一份拷贝，这样就能安装其他包了。虚拟环境的名字（此例中是 my_project<br> ） 可以是任意的；若省略名字将会把文件均放在当前目录。<br>在任何你运行命令的目录中，这会创建Python的拷贝，并将之放在叫做 my_project<br> 的文件中。<br>你可以选择使用一个Python解释器（比如<code>python2.7</code>）：<br>$ <code>virtualenv -p /usr/bin/python2.7 my_project</code></p>
-<p>或者使用<code>~/.bashrc</code>的一个环境变量将解释器改为全局性的：<br>$ <code>export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7</code></p>
-<p>要开始使用虚拟环境，其需要被激活：</p>
-<p>$ <code>source my_project/bin/activate</code></p>
-<p>当前虚拟环境的名字会显示在提示符左侧（比如说 (my_project)你的电脑:你的工程 用户名$） 以让你知道它是激活的。从现在起，任何你使用pip安装的包将会放在 <code></code>my_project<br>文件夹中， 与全局安装的Python隔绝开。<br>像平常一样安装包，比如：<br>$ <code>pip install requests</code></p>
-<p>如果你在虚拟环境中暂时完成了工作，则可以停用它：</p>
-<p>$ <code>deactivate</code></p>
-<p>这将会回到系统默认的Python解释器，包括已安装的库也会回到默认的。<br>要删除一个虚拟环境，只需删除它的文件夹。（要这么做请执行 rm -rf my_project<br> ）<br>然后一段时间后，你可能会有很多个虚拟环境散落在系统各处，你将有可能忘记它们的名字或者位置。</p>
-<p>其他注意<a href="http://pythonguidecn.readthedocs.io/zh/latest/dev/virtualenvs.html#id4" target="_blank" rel="noopener"></a><br>运行带 –no-site-packages<br> 选项的 virtualenv<br> 将不会包括全局安装的包。 这可用于保持包列表干净，以防以后需要访问它。（这在 virtualenv<br> 1.7及之后是默认行为）<br>为了保持你的环境的一致性，“冷冻住（freeze）”环境包当前的状态是个好主意。要这么做，请运行：<br>$ <code>pip freeze &amp;gt; requirements.txt</code></p>
-<p>这将会创建一个 requirements.txt<br> 文件，其中包含了当前环境中所有包及 各自的版本的简单列表。你可以使用 “pip list”在不产生requirements文件的情况下， 查看已安装包的列表。这将会使另一个不同的开发者（或者是你，如果你需要重新创建这样的环境） 在以后安装相同版本的相同包变得容易。<br>$ <code>pip install -r requirements.txt</code></p>
-<p>这能帮助确保安装、部署和开发者之间的一致性。<br>最后，记住在源码版本控制中排除掉虚拟环境文件夹，可在ignore的列表中加上它。</p>
-
-          
+          （内容来自网络，备用）virtualenv 是一个创建隔绝的Python环境的 工具。virtualenv创建一个包含所有必要的可执行文件的文件夹，用
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/23/python-e8-99-9a-e6-8b-9f-e7-8e-af-e5-a2-83-virtualenv/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -533,12 +525,19 @@
       
         
           
-            <p>阿里</p>
-<blockquote>
-<p><a href="http://mirrors.aliyun.com/pypi/simple" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple</a></p>
-</blockquote>
+          阿里
+
+http://mirrors.aliyun.com/pypi/simple
+
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/23/pip-e6-ba-90/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -678,82 +677,16 @@
       
         
           
-            <h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>公司项目使用Laravel的开发的两个项目在同一个测试服务器部署，公用同一个redis。在使用laravel中的队列时，产生冲突干扰。</p>
-<h4 id="查找问题原因"><a href="#查找问题原因" class="headerlink" title="查找问题原因"></a>查找问题原因</h4><p>在laravel 队列的操作类<code>Illuminate\Queue\RedisQueue.php</code>中可以看到<code>pushRaw()</code>方法：</p>
-<pre><code>// 将一任务推入队列中
-public function pushRaw($payload, $queue = null, array $options = [])
-    {
-        $this-&amp;gt;getConnection()-&amp;gt;rpush($this-&amp;gt;getQueue($queue), $payload);
-
-        return Arr::get(json_decode($payload, true), &apos;id&apos;);
-    }
-`&lt;/pre&gt;
-
-从该方法中可以看出Lrarvel队列的redis实现是通过list结构实现的，`rpush(key, value)`是将value推入键值为key的redis队列，key的值则是通过`$this-&amp;gt;getQueue($queue)` 获取到的
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`protected function getQueue($queue)
-    {
-        return &apos;queues:&apos;.($queue ?: $this-&amp;gt;default);
-    }
-`&lt;/pre&gt;
-
-所以的redis中list中的key是 `&apos;queues:&apos;.($queue ?: $this-&amp;gt;default);`拼接的，`$this-&amp;gt;default` 的值是 `RedisQueue` 实例化的时候从`config\queue.php`配置中加载的 `&apos;queue&apos;      =&amp;gt; &apos;default&apos;`，`$queue` 是添加队列时`$this-&amp;gt;dispatch( new jobClass()-&amp;gt;onQueue($queue) )`传入的。
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`// config\queue.php 文件中的redis配置部分
-&apos;redis&apos; =&amp;gt; [
-            &apos;driver&apos;     =&amp;gt; &apos;redis&apos;,
-            &apos;connection&apos; =&amp;gt; &apos;default&apos;,
-            &apos;queue&apos;      =&amp;gt; &apos;default&apos;,
-            &apos;expire&apos;     =&amp;gt; 60,
-        ],
-`&lt;/pre&gt;
-
-至此，两个项目的队列冲突原因就找到了。因为redis队列配置中 `&apos;queue&apos;      =&amp;gt; &apos;default&apos;` 都使用的默认的default，所以当共用redis时，默认的队列list 都是&apos;queue:default&apos;,所以导致了冲突。
-
-因为队列监听 监听的队列名称是由 --queue参数决定的，如果不传就是我们上面设置的默认值，若传了就会根据传入的队列名从前往后优先依次处理，具体见代码`Illuminate\Queue\Worker.php`中：
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`protected function getNextJob($connection, $queue)
-    {
-        if (is_null($queue)) {
-            return $connection-&amp;gt;pop();
-        }
-
-        foreach (explode(&apos;,&apos;, $queue) as $queue) {
-            if (! is_null($job = $connection-&amp;gt;pop($queue))) {
-                return $job;
-            }
-        }
-    }
-`&lt;/pre&gt;
-
-`$queue`就是`--queue=`传入的参数，当 $queue不存在是直接调用`$connection-&amp;gt;pop()`当参数存在时会将参数解析，优先处理排在前面的队列名称，将队列名称传入`pop($queue)`, `pop()`会尝试从指定队列或默认队列中获取队列任务
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`// Illuminate\Queue\RedisQueue.php
-public function pop($queue = null)
-    {
-        $original = $queue ?: $this-&amp;gt;default;
-
-        $queue = $this-&amp;gt;getQueue($queue);
-
-        if (! is_null($this-&amp;gt;expire)) {
-            $this-&amp;gt;migrateAllExpiredJobs($queue);
-        }
-
-        $job = $this-&amp;gt;getConnection()-&amp;gt;lpop($queue);
-
-        if (! is_null($job)) {
-            $this-&amp;gt;getConnection()-&amp;gt;zadd($queue.&apos;:reserved&apos;, $this-&amp;gt;getTime() + $this-&amp;gt;expire, $job);
-
-            return new RedisJob($this-&amp;gt;container, $this, $job, $original);
-        }
-    }
-</code></pre><p>至此搞清了队列执行的原理。</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>将queue的配置文件中默认队列修改为不同的名称，比如： ‘queue’      =&gt; laravel1’,’queue’      =&gt; laravel2’。</p>
-<p>队列监听 <code>php artisan queue:listen redis --queue=laravel1,syncExpress</code></p>
-<h4 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h4><p>遇到问题，莫要病急乱投医。从代码入手，分析理解实现原理，找对点，解决方法也许很简单，^_^。</p>
-<p>欢迎关注我的<a href="http://llheng.info" target="_blank" rel="noopener">博客</a></p>
-
-          
+          问题公司项目使用Laravel的开发的两个项目在同一个测试服务器部署，公用同一个redis。在使用laravel中的队列时，产生冲突干扰。
+查找问题原
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/19/laravel-e9-98-9f-e5-88-97-e4-bd-bf-e7-94-a8-e4-b8-ad-e7-9a-84-e9-97-ae-e9-a2-98-e8-a7-a3-e5-86-b3-e8-ae-b0-e5-bd-95/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -893,17 +826,15 @@ public function pop($queue = null)
       
         
           
-            <h6 id="Golang-支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。"><a href="#Golang-支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。" class="headerlink" title="Golang 支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。"></a>Golang 支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。</h6><p>Mac 下编译 <a href="http://lib.csdn.net/base/linux" target="_blank" rel="noopener">Linux</a> 和 Windows 64位可执行程序</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CGO_ENABLED=<span class="number">0</span> GOOS=linux GOARCH=amd64 <span class="keyword">go</span> build </span><br><span class="line">CGO_ENABLED=<span class="number">0</span> GOOS=windows GOARCH=amd64 <span class="keyword">go</span> build</span><br></pre></td></tr></table></figure>
-<p><a href="http://lib.csdn.net/base/linux" target="_blank" rel="noopener">linux</a> 下编译 Mac 和 Windows 64位可执行程序</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CGO_ENABLED=<span class="number">0</span> GOOS=darwin GOARCH=amd64 <span class="keyword">go</span> build </span><br><span class="line">CGO_ENABLED=<span class="number">0</span> GOOS=windows GOARCH=amd64 <span class="keyword">go</span> build</span><br></pre></td></tr></table></figure>
-<p>Windows 下编译 Mac 和 Linux 64位可执行程序</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SET CGO_ENABLED=<span class="number">0</span>SET GOOS=darwinSET GOARCH=amd64 <span class="keyword">go</span> build main.<span class="keyword">go</span></span><br><span class="line">SET CGO_ENABLED=<span class="number">0</span>SET GOOS=linuxSET GOARCH=amd64 <span class="keyword">go</span> build main.<span class="keyword">go</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>GOOS：目标平台的<a href="http://lib.csdn.net/base/operatingsystem" target="_blank" rel="noopener">操作系统</a>（darwin、freebsd、linux、windows） GOARCH：目标平台的体系<a href="http://lib.csdn.net/base/architecture" target="_blank" rel="noopener">架构</a>（386、amd64、arm） 交叉编译不支持 CGO 所以要禁用它<br>  上面的命令编译 64 位可执行程序，你当然应该也会使用 386 编译 32 位可执行程序 很多博客都提到要先增加对其它平台的支持，但是我跳过那一步，上面所列的命令也都能成功，且得到我想要的结果，可见那一步应该是非必须的，或是我所使用的 <a href="http://lib.csdn.net/base/go" target="_blank" rel="noopener">Go</a> 版本已默认支持所有平台。</p>
-</blockquote>
-
-          
+          Golang 支持交叉编译，在一个平台上生成另一个平台的可执行程序，最近使用了一下，非常好用，这里备忘一下。Mac 下编译 Linux 和 Windo
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/12/Go 各平台交叉编译/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1054,8 +985,15 @@ public function pop($queue = null)
       
         
           
-            <h3 id="数据结构与算法分析-笔记"><a href="#数据结构与算法分析-笔记" class="headerlink" title="数据结构与算法分析 笔记"></a>数据结构与算法分析 笔记</h3><h6 id="searchtree-c"><a href="#searchtree-c" class="headerlink" title="searchtree.c"></a>searchtree.c</h6><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FatalError(str) fprintf(stderr, <span class="meta-string">"%s\n"</span>, str),exit(1);</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> Error(str) FatalError(str);</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> *<span class="title">Position</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> *<span class="title">SearchTree</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> ElementType;</span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">MakeEmpty</span><span class="params">(SearchTree T)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">Find</span><span class="params">(ElementType X, SearchTree T)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">FindMin</span><span class="params">(SearchTree)</span></span>;</span><br><span class="line"><span class="function">Position <span class="title">FindMax</span><span class="params">(SearchTree)</span></span>;</span><br><span class="line"><span class="function">SearchTree <span class="title">Insert</span><span class="params">(ElementType X, SearchTree T)</span></span>;</span><br><span class="line"><span class="function">SearchTree <span class="title">Delete</span><span class="params">(ElementType X, SearchTree T)</span></span>;</span><br><span class="line"><span class="function">ElementType <span class="title">Retrieve</span><span class="params">(Position P)</span></span>;</span><br><span class="line"><span class="function">ElementType <span class="title">DeleteMin</span><span class="params">(SearchTree T)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> &#123;</span></span><br><span class="line">    ElementType Element;</span><br><span class="line">    Position Left;</span><br><span class="line">    Position Right;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">MakeEmpty</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T != <span class="literal">NULL</span>)&#123;</span><br><span class="line">        T-&amp;gt;Element = <span class="literal">NULL</span>;</span><br><span class="line">        MakeEmpty(T-&amp;gt;Left);</span><br><span class="line">        MakeEmpty(T-&amp;gt;Right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">Find</span><span class="params">(ElementType X, SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;lt; T-&amp;gt;Element)&#123;</span><br><span class="line">        <span class="keyword">return</span> Find(X, T-&amp;gt;Left);</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;gt; T-&amp;gt;Element)&#123;</span><br><span class="line">        <span class="keyword">return</span> Find(X, T-&amp;gt;Right);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">FindMin</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(T-&amp;gt;Left == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> T;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> FindMin(T-&amp;gt;Left);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Position <span class="title">FindMax</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (T != <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">while</span>(T-&amp;gt;Right != <span class="literal">NULL</span>)&#123;</span><br><span class="line">            T = T-&amp;gt;Right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Position FindMax(SearchTree T)</span></span><br><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">//     if(T == NULL)&#123;</span></span><br><span class="line"><span class="comment">//         return NULL;</span></span><br><span class="line"><span class="comment">//     &#125;else</span></span><br><span class="line"><span class="comment">//     if(T-&amp;gt;Right == NULL)&#123;</span></span><br><span class="line"><span class="comment">//         return T;</span></span><br><span class="line"><span class="comment">//     &#125;else&#123;</span></span><br><span class="line"><span class="comment">//         return FindMax(T-&amp;gt;Right);</span></span><br><span class="line"><span class="comment">//     &#125;</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">Insert</span><span class="params">(ElementType X, SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        T = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(struct TreeNode));</span><br><span class="line">        <span class="keyword">if</span>( T == <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            FatalError(<span class="string">"Out of space!!!"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            T-&amp;gt;Element = X;</span><br><span class="line">            T-&amp;gt;Left = T-&amp;gt;Right = <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;lt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T-&amp;gt;Left = Insert(X, T-&amp;gt;Left);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(X &amp;gt; T-&amp;gt;Element)</span><br><span class="line">        T-&amp;gt;Right = Insert(X, T-&amp;gt;Right);</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ElementType <span class="title">Retrieve</span><span class="params">(Position P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> P-&amp;gt;Element;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">SearchTree <span class="title">Delete</span><span class="params">(ElementType X, SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position P;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        Error(<span class="string">"Element not found"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    <span class="keyword">if</span>(X &amp;lt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T = T-&amp;gt;Left;</span><br><span class="line">        <span class="keyword">return</span> Delete(X, T);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    <span class="keyword">if</span>(X &amp;gt; T-&amp;gt;Element)</span><br><span class="line">    &#123;</span><br><span class="line">        T = T-&amp;gt;Right;</span><br><span class="line">        <span class="keyword">return</span> Delete(X, T);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span>(T-&amp;gt;Left &amp;amp;&amp;amp; T-&amp;gt;Right)</span><br><span class="line">    &#123;</span><br><span class="line">        T-&amp;gt;Element = DeleteMin(T-&amp;gt;Right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        P = T;</span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Left == <span class="literal">NULL</span>)</span><br><span class="line">            T = T-&amp;gt;Right;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Right == <span class="literal">NULL</span>)</span><br><span class="line">            T = T-&amp;gt;Left;</span><br><span class="line">        <span class="built_in">free</span>(P);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> T;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ElementType <span class="title">DeleteMin</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Position P;</span><br><span class="line">    ElementType X;</span><br><span class="line">    P = FindMin(T);</span><br><span class="line">    X = P-&amp;gt;Element;</span><br><span class="line">    <span class="built_in">free</span>(P);</span><br><span class="line">    <span class="keyword">return</span> X;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">PrintSearchTree</span><span class="params">(SearchTree T)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(T == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        Error(<span class="string">"Element not found"</span>);</span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">if</span>(T-&amp;gt;Left == <span class="literal">NULL</span> &amp;amp;&amp;amp; T-&amp;gt;Right == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, T-&amp;gt;Element);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Left != <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            PrintSearchTree(T-&amp;gt;Left);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, T-&amp;gt;Element);</span><br><span class="line">        <span class="keyword">if</span>(T-&amp;gt;Right != <span class="literal">NULL</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            PrintSearchTree(T-&amp;gt;Right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SearchTreeTest</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    SearchTree T;</span><br><span class="line">    T = MakeEmpty(T);</span><br><span class="line">    T = Insert(<span class="number">1</span>,T);</span><br><span class="line">    T = Insert(<span class="number">3</span>,T);</span><br><span class="line">    T = Insert(<span class="number">2</span>,T);</span><br><span class="line">    T = Insert(<span class="number">6</span>,T);</span><br><span class="line">    T = Insert(<span class="number">4</span>,T);</span><br><span class="line">    PrintSearchTree(T);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">`&lt;/pre&gt;</span><br><span class="line"></span><br><span class="line">&gt; main.c</span><br><span class="line"></span><br><span class="line">&lt;pre <span class="class"><span class="keyword">class</span>="<span class="title">line</span>-<span class="title">numbers</span> <span class="title">prism</span>-<span class="title">highlight</span>" <span class="title">data</span>-<span class="title">start</span>="1"&gt;`#<span class="title">include</span> "<span class="title">searchtree</span>.<span class="title">c</span>"</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">int</span> <span class="title">main</span>(<span class="title">void</span>)</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    SearchTreeTest();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
+          数据结构与算法分析 笔记searchtree.c123456789101112131415161718192021222324252627282930
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/20/二叉树--C语言实现/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1206,33 +1144,16 @@ public function pop($queue = null)
       
         
           
-            <pre><code>#include &quot;list.c&quot;
-#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str),exit(1);
-void PrintLots(List L, List P)
-{
-    Position Lnext,Pnext;
-    int n;
-
-    if(IsEmpty(L)){
-        FatalError(&quot;list is empty!!!&quot;);
-    }
-    n = 1;
-    Lnext = L;
-    Pnext = P;
-    while((Lnext = Advance(Lnext)) != NULL){
-        while((Pnext = Advance(Pnext)) != NULL){
-            if(n++ == Lnext-&amp;gt;Element){
-                printf(&quot;%d\n&quot;, Pnext-&amp;gt;Element);
-                break;
-            }
-        }
-        if(Lnext == NULL || Pnext == NULL){
-            return;
-        }
-    }
-}
-</code></pre>
-          
+          #include &quot;list.c&quot;
+#define FatalError(str) fprintf(stderr, &quot;%
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/11/e6-95-b0-e6-8d-ae-e7-bb-93-e6-9e-84-e4-b8-8e-e7-ae-97-e6-b3-95-e7-bb-83-e4-b9-a0-3-2-e7-ad-94-e6-a1-88/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1383,142 +1304,17 @@ void PrintLots(List L, List P)
       
         
           
-            <pre><code>#include &amp;lt;stdlib.h&amp;gt;
+          #include &amp;lt;stdlib.h&amp;gt;
 #include &amp;lt;stdio.h&amp;gt;
-#include &amp;lt;string.h&amp;gt;
-// 栈操作数组实现
-typedef int ElementType;
-struct StackRecord;
-typedef struct StackRecord *Stack;
-
-int IsEmpty(Stack S);
-int IsFull(Stack S);
-Stack CreateStack(int MaxElements);
-void DisposeStack(Stack S);
-void MakeEmpty(Stack S);
-void Push(ElementType X, Stack S);
-ElementType Top(Stack S);
-void Pop(Stack S);
-ElementType TopAndPop(Stack S);
-void _Test(void);
-
-#define EmptyTOS (-1)
-#define MinStackSize (5)
-#define Error(str) fprintf(stderr,&quot;%s/n&quot;, str),exit(1)
-
-struct StackRecord {
-    int Capacity;
-    int TopOfStack;
-    ElementType *Array;
-};
-
-// 判断栈是否为空
-int IsEmpty(Stack S)
-{
-    return S-&amp;gt;TopOfStack == EmptyTOS;
-}
-// 判断栈是否已满
-int IsFull(Stack S)
-{
-    return S-&amp;gt; Capacity == S-&amp;gt;TopOfStack;
-}
-
-Stack CreateStack(int MaxElements)
-{
-    Stack S;
-    if(MaxElements &amp;lt; MinStackSize){
-        Error(&quot;Stack size too small&quot;);
-    }
-    S = malloc(sizeof(struct StackRecord));
-    if(S == NULL){
-        Error(&quot;Out of space!!!&quot;);
-    }
-    S-&amp;gt;Array = malloc(sizeof(ElementType) * MaxElements);
-    if(S-&amp;gt;Array == NULL){
-        Error(&quot;Out of space!!!&quot;);
-    }
-
-    S-&amp;gt;Capacity = MaxElements;
-    MakeEmpty(S);
-    return S;
-
-}
-
-void MakeEmpty(Stack S)
-{
-    S-&amp;gt;TopOfStack = EmptyTOS;
-}
-
-void DisposeStack(Stack S)
-{
-    if(S == NULL){
-        free(S-&amp;gt;Array);
-        free(S);
-    }
-}
-
-void Push(ElementType X, Stack S)
-{
-    if(IsFull(S)){
-        Error(&quot;full stack&quot;);
-    }else{
-        S-&amp;gt;Array[++S-&amp;gt;TopOfStack] = X;
-    }  
-}
-
-ElementType Top(Stack S)
-{
-    if(!IsEmpty(S)){
-        return S-&amp;gt;Array[S-&amp;gt;TopOfStack];
-    }
-    Error(&quot;Empty Stack!!!&quot;);
-    return 0;
-}
-
-void Pop(Stack S)
-{
-    if(IsEmpty(S)){
-        Error(&quot;Empty Stack&quot;);
-    }else{
-        S-&amp;gt;TopOfStack--;
-    }
-}
-
-ElementType TopAndPop(Stack S)
-{
-    if(IsEmpty(S)){
-        Error(&quot;Empty stack&quot;);
-        return 0;
-    }else{
-        return S-&amp;gt;TopOfStack--;
-    }
-}
-
-void _Test(void)
-{
-    int a, b, c;
-    Stack S;
-    a = 1;
-    b = 2;
-    c = 3;
-
-    S = CreateStack(10);
-    if(S == NULL){
-        Error(&quot;create stack err&quot;);
-    }
-
-    Push(a, S);
-    printf(&quot;%d\\n&quot;, Top(S));
-    Push(b, S);
-    printf(&quot;%d\\n&quot;, Top(S));
-    Pop(S);
-    printf(&quot;%d\\n&quot;, Top(S));
-    MakeEmpty(S);
-    Push(c, S);
-    printf(&quot;%d\\n&quot;, Top(S));
-}
-</code></pre>
-          
+#include
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/09/e6-95-b0-e6-8d-ae-e7-bb-93-e6-9e-84-e4-b9-8b-e6-a0-88-c-e8-af-ad-e8-a8-80-e6-95-b0-e7-bb-84-e5-ae-9e-e7-8e-b0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1669,119 +1465,17 @@ void _Test(void)
       
         
           
-            <pre><code>#include &amp;lt;stdlib.h&amp;gt;
+          #include &amp;lt;stdlib.h&amp;gt;
 #include &amp;lt;stdio.h&amp;gt;
-#define FatalError(str) fprintf(stderr, &quot;%s\\n&quot;, str),exit(1);
-
-#define Error(str) FatalError(str);
-#ifndef _stack_h
-struct Node;
-typedef struct Node *PtrToNode;
-typedef PtrToNode Stack;
-typedef int ElementType;
-Stack CreateStack(void);
-int IsEmpty(Stack S);
-void MakeEmpty(Stack S);
-void Pop(Stack S);
-void Push(ElementType X, Stack S);
-ElementType Top(Stack S);
-void _Test(void);
-#endif
-
-struct Node
-{
-    ElementType Element;
-    PtrToNode Next;
-};
-
-Stack CreateStack(void)
-{
-    Stack S;
-    S = malloc(sizeof(struct Node));
-    if(S == NULL){
-        FatalError(&quot;Out of space!!!&quot;);
-    }
-    S-&amp;gt;Next = NULL;
-
-    return S;
-}
-
-int IsEmpty(Stack S)
-{
-    return S-&amp;gt;Next == NULL;
-}
-
-void MakeEmpty(Stack S)
-{
-    if(S == NULL){
-        Error(&quot;Must use CreateStack first&quot;);
-    }else{
-        while(!IsEmpty(S)){
-        Pop(S);
-        }
-    }
-}
-
-void Push(ElementType X, Stack S)
-{
-    PtrToNode TmpCell;
-    TmpCell = malloc(sizeof(struct Node));
-    if(TmpCell == NULL){
-        FatalError(&quot;out of space!!!&quot;);
-    }else{
-        TmpCell-&amp;gt;Element = X;
-        TmpCell-&amp;gt;Next = S-&amp;gt;Next;
-        S-&amp;gt;Next = TmpCell;
-    }
-}
-
-ElementType Top(Stack S)
-{
-    if(!IsEmpty(S)){
-        return S-&amp;gt;Next-&amp;gt;Element;
-    }
-    Error(&quot;stack empty!&quot;);
-    return 0;
-}
-
-void Pop(Stack S)
-{
-    PtrToNode TmpCell;
-
-    if(IsEmpty(S)){
-        Error(&quot;stack empty!&quot;);
-    }else{
-        TmpCell = S-&amp;gt;Next;
-        S-&amp;gt;Next = S-&amp;gt;Next-&amp;gt;Next;
-        free(TmpCell);
-    }
-}
-
-void _Test(void)
-{
-    int a, b, c;
-    Stack S;
-    a = 1;
-    b = 2;
-    c = 3;
-
-    S = CreateStack();
-    if(S == NULL){
-        FatalError(&quot;create stack err&quot;);
-    }
-
-    Push(a, S);
-    printf(&quot;%d\\n&quot;, Top(S));
-    Push(b, S);
-    printf(&quot;%d\\n&quot;, Top(S));
-    Pop(S);
-    printf(&quot;%d\\n&quot;, Top(S));
-    MakeEmpty(S);
-    Push(c, S);
-    printf(&quot;%d\\n&quot;, Top(S));
-}
-</code></pre>
-          
+#define 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/05/e6-95-b0-e6-8d-ae-e7-bb-93-e6-9e-84-e4-b9-8b-e6-a0-88-c-e5-ae-9e-e7-8e-b0-e7-ac-94-e8-ae-b0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1921,181 +1615,18 @@ void _Test(void)
       
         
           
-            <p>list.c</p>
-<pre><code>#include &lt;stdio.h&gt;;
+          list.c
+#include &lt;stdio.h&gt;;
 #include &lt;stdlib.h&gt;;
-#define FatalError(str) fprintf(stderr, &quot;%s\n&quot;, str),exit(1);
-
-typedef int ElementType;
-#ifndef _list_H
-struct Node;
-typedef struct Node *PtrToNode;
-typedef PtrToNode List;
-typedef PtrToNode Position;
-
-List MakeEmpty(List L);
-int IsEmpty(List L);
-int IsLast(Position P, List L);
-Position Find(ElementType X, List L);
-void Delete(ElementType X, List L);
-Position FindPrevious(ElementType X, List L);
-void Insert(ElementType X, List L, Position P);
-void DeleteList(List L);
-Position Header(List L);
-Position First(List L);
-Position Advance(Position P);
-ElementType Retrieve(Position P);
-
-#endif
-
-struct Node {
-    ElementType Element;
-    Position Next;
-};
-
-List MakeEmpty(List L)
-{
-    if (L != NULL){
-        DeleteList(L);
-    }
-    L = malloc(sizeof(struct Node));
-    if(L == NULL){
-        FatalError(&quot;Out of space!!!&quot;);
-    }
-    L-&amp;gt;Next = NULL;
-    return L;
-}
-
-// 测试链表是否是空链表
-int IsEmpty(List L)
-{
-    return L-&amp;gt;Next == NULL;
-}
-
-// 检测当前位置是否是链表的末尾
-int IsLast(Position P, List L)
-{
-    return P-&amp;gt;Next == NULL;
-}
-
-// 查找链表中第一次出现X的位置
-Position Find(ElementType X, List L)
-{
-    Position P;
-
-    P = L-&amp;gt;Next;
-    while(P != NULL &amp;amp;&amp;amp; P-&amp;gt;Element != X){
-        P = P-&amp;gt;Next;
-    }
-
-    return P;
-}
-
-Position FindPrevious(ElementType X, List L)
-{
-    Position P;
-    P = L;
-    while(P-&amp;gt;Next != NULL &amp;amp;&amp;amp; P-&amp;gt;Next-&amp;gt;Element != X){
-        P = P-&amp;gt;Next;
-    }
-    return P;
-}
-
-void Delete(ElementType X, List L){
-    Position P, TmpCell;
-
-    P = FindPrevious(X, L);
-    if(!IsLast(P, L)){
-        TmpCell = P-&amp;gt;Next;
-        P-&amp;gt;Next = TmpCell-&amp;gt;Next;
-        free(TmpCell);
-    }
-}
-
-void Insert(ElementType X, List L, Position P)
-{
-    Position TmpCell;
-    TmpCell = malloc(sizeof(struct Node));
-    if(TmpCell == NULL){
-        FatalError(&quot;Out of space!!!&quot;);
-    }
-    TmpCell-&amp;gt;Element = X;
-    TmpCell-&amp;gt;Next = P-&amp;gt;Next;
-    P-&amp;gt;Next = TmpCell;
-}
-
-void DeleteList(List L)
-{
-    Position P, TmpCell;
-
-    P = L-&amp;gt;Next;
-    L-&amp;gt;Next = NULL;
-    while(P != NULL){
-        TmpCell = P-&amp;gt;Next;
-        free(P);
-        P = TmpCell;
-    }
-}
-
-Position Header(List L)
-{
-    return L;
-}
-
-Position First(List L)
-{
-    return L-&amp;gt;Next;
-}
-
-Position Advance(Position P)
-{
-    return P-&amp;gt;Next;
-}
-
-ElementType Retrieve(Position P)
-{
-    return P-&amp;gt;Element;
-}
-
-void PrintList(List L)
-{
-    Position P = Header(L);
-
-    if(IsEmpty(L)){
-        FatalError(&quot;Empty List\n&quot;);
-    }else{
-        do{
-            P = Advance(P);
-            printf(&quot;%d &quot;, P-&amp;gt;Element);
-        }while(!IsLast(P, L));
-    }
-    printf(&quot;\n&quot;);
-}
-`&lt;/pre&gt;
-
-main.c
-
-&lt;pre class=&quot;line-numbers prism-highlight&quot; data-start=&quot;1&quot;&gt;`#include &quot;list.c&quot;
-
-int main()
-{
-    List L;
-    Position P;
-    L = MakeEmpty(NULL);
-    P = Header(L);
-    Insert(1, L, P);
-    PrintList(L);
-    P = Advance(P);
-    Insert(2, L, P);
-    PrintList(L);
-    Delete(1, L);
-    PrintList(L);
-    DeleteList(L);
-    PrintList(L);
-    return 0;
-}
-</code></pre>
-          
+#define FatalEr
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/02/单链表/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2235,12 +1766,16 @@ int main()
       
         
           
-            <p>测试服务器中的磁盘满了，整理后使用，发现七牛获取token 出错</p>
-<pre><code>array_key_exists() expects parameter 2 to be array, null given
-</code></pre><p>经过排查发现，七牛会将从自己服务器中配置信息缓存在服务器的临时文件中。<br>因为测试服务器磁盘满了，导致七牛的SDK在创建临时文件时，文件创建了但内容没有写入，获取信息时判断文件存在，里面信息为空，结果导致了上面报错</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>删除了七牛临时文 <code>.qiniu_phpsdk_hostscache.json</code></p>
-
-          
+          测试服务器中的磁盘满了，整理后使用，发现七牛获取token 出错
+array_key_exists() expects parameter 2 to 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/26/e8-ae-b0-e4-b8-80-e6-ac-a1-e4-bd-bf-e7-94-a8-e4-b8-83-e7-89-9b-e8-8e-b7-e5-8f-96token-e7-9a-84-e9-94-99-e8-af-af/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

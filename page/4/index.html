@@ -377,15 +377,17 @@
       
         
           
-            <p>搜索： <code>brew search mysql</code></p>
-<p>查询：<code>brew info mysql</code> 主要看具体的信息，比如目前的版本，依赖，安装后注意事项等</p>
-<p>更新：<code>brew update</code> 这会更新 Homebrew 自己，并且使得接下来的两个操作有意义——</p>
-<p>检查过时（是否有新版本）：<code>brew outdated</code> 这回列出所有安装的软件里可以升级的那些</p>
-<p>升级：<code>brew upgrade</code> 升级所有可以升级的软件们</p>
-<p>清理：<code>brew cleanup</code> 清理不需要的版本极其安装包缓存</p>
-<p>卸载更方便了  <code>brew uninstall</code></p>
-
-          
+          搜索： brew search mysql
+查询：brew info mysql 主要看具体的信息，比如目前的版本，依赖，安装后注意事项等
+更新：br
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/25/mac-brew-e5-b8-b8-e7-94-a8-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -525,9 +527,15 @@
       
         
           
-            <h4 id="学习笔记"><a href="#学习笔记" class="headerlink" title="学习笔记"></a>学习笔记</h4><h6 id="判断两个文件是否一致-并打印出第一个不同行"><a href="#判断两个文件是否一致-并打印出第一个不同行" class="headerlink" title="判断两个文件是否一致 并打印出第一个不同行"></a>判断两个文件是否一致 并打印出第一个不同行</h6><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXLINE 100</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">diff</span><span class="params">(<span class="keyword">char</span> *a, <span class="keyword">char</span> *b)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="number">3</span> != argc)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"参数不正确\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    diff(argv[<span class="number">1</span>], argv[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">diff</span><span class="params">(<span class="keyword">char</span> *a, <span class="keyword">char</span> *b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    FILE *afp;</span><br><span class="line">    FILE *bfp;</span><br><span class="line">    <span class="keyword">char</span> aline[MAXLINE];</span><br><span class="line">    <span class="keyword">char</span> bline[MAXLINE];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((afp = fopen(a, <span class="string">"r"</span>)) == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Error: not file %s"</span>, a);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((bfp = fopen(b, <span class="string">"r"</span>)) == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Error: not file %s"</span>, b);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>((fgets(aline, MAXLINE, afp) == aline) &amp;amp;&amp;amp; (fgets(bline, MAXLINE, bfp) == bline))&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">strcmp</span>(aline, bline) != <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%s:%s"</span>, a, aline);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"%s:%s"</span>, b, bline);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(afp);</span><br><span class="line">    fclose(bfp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
+          学习笔记判断两个文件是否一致 并打印出第一个不同行12345678910111213141516171819202122232425262728293
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/19/c语言-判断两个文件是否一致/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -667,9 +675,15 @@
       
         
           
-            <pre><code>select * from table order by case field when field=2 then 1 else 0 end, field desc;
-</code></pre><h3 id="【解释】查询时，当某条数据中的字段field-的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；"><a href="#【解释】查询时，当某条数据中的字段field-的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；" class="headerlink" title="【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；"></a>【解释】查询时，当某条数据中的字段field 的值为2时，该条field的排序权值为1，其他的为0，使用降序排列；</h3>
-          
+          select * from table order by case field when field=2 then 1 else 0 end, fie
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/18/order by case when 的用法/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

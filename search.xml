@@ -3,6 +3,23 @@
   
     
     <entry>
+      <title>记mysql语句执行堵塞排查</title>
+      <link href="/2020/08/25/%E8%AE%B0mysql%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E5%A0%B5%E5%A1%9E%E6%8E%92%E6%9F%A5/"/>
+      <url>/2020/08/25/%E8%AE%B0mysql%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E5%A0%B5%E5%A1%9E%E6%8E%92%E6%9F%A5/</url>
+      <content type="html"><![CDATA[<h2 id="先说原因"><a href="#先说原因" class="headerlink" title="先说原因"></a>先说原因</h2><p>测试环境的binlog 没有自动删除，导致磁盘占满，请求的 sql全都堵塞，事务锁又进一步影响到后续的事务，报<code>Lock wait timeout exceeded</code>,大部分事务state 都是 commit、starting、query。):</p><h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><ol><li>日志报错 <code>Lock wait timeout exceeded</code><br>首先想到是事务死锁了使用<code>SELECT * FROM information_schema.INNODB_TRX;</code>查看正在执行的事务，发现全是state状态大部分都是 commit、starting、query，而不是锁等待状态，并且执行很长时间了。然后<code>show processlist</code> 查看线程，也是发现大量的线程，基本一个事务对应一个线程，全都堵塞在那。很奇怪，没死锁又全在等待。 没思路了。。。 先把线程都kill掉，测试下正常了，然后又会慢慢出现等待的事务。</li><li>求助搜索引擎，有种可能是 数据盘写满了所以都在等待，<code>du -f</code>果然是磁盘满了，然后就发现是binlog没自动删除，占满了磁盘，清除部分binlog后，正常了。</li><li><code>/etc/my.cnf</code> 设置 <code>expire_logs_days = 15</code> 保留15天的。</li></ol>]]></content>
+      
+      
+        <tags>
+            
+            <tag> mysql </tag>
+            
+            <tag> binlog </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>rust笔记1</title>
       <link href="/2019/10/17/rust%E7%AC%94%E8%AE%B01/"/>
       <url>/2019/10/17/rust%E7%AC%94%E8%AE%B01/</url>
@@ -43,9 +60,9 @@
       
         <tags>
             
-            <tag> php </tag>
-            
             <tag> linux </tag>
+            
+            <tag> php </tag>
             
         </tags>
       
@@ -176,9 +193,9 @@
       
         <tags>
             
-            <tag> php </tag>
-            
             <tag> linux </tag>
+            
+            <tag> php </tag>
             
             <tag> libreoffice </tag>
             

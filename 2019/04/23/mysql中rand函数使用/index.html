@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="需求是：从数据库中随机取出符合条件的几条数据; 可使用下面来随机获取5条数据 select * from table order by rand() limit 5  需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整体排序，数据量比较大的时候速度很慢。  经测试在50W条数据中随机取需要十几秒的时间。">
+<meta name="description" content="需求是：从数据库中随机取出符合条件的几条数据; 可使用下面来随机获取5条数据 select * from table order by rand() limit 5  需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整体排序，数据量比较大的时候速度很慢。  经测试在50W条数据中随机取需要十几秒的时间。  数据量比较">
 <meta name="keywords" content="mysql,rand()">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql中rand函数使用">
 <meta property="og:url" content="http://yoursite.com/2019/04/23/mysql中rand函数使用/index.html">
 <meta property="og:site_name" content="Dr點燃">
-<meta property="og:description" content="需求是：从数据库中随机取出符合条件的几条数据; 可使用下面来随机获取5条数据 select * from table order by rand() limit 5  需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整体排序，数据量比较大的时候速度很慢。  经测试在50W条数据中随机取需要十几秒的时间。">
+<meta property="og:description" content="需求是：从数据库中随机取出符合条件的几条数据; 可使用下面来随机获取5条数据 select * from table order by rand() limit 5  需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整体排序，数据量比较大的时候速度很慢。  经测试在50W条数据中随机取需要十几秒的时间。  数据量比较">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-23T05:57:13.823Z">
+<meta property="og:updated_time" content="2020-08-26T02:28:46.644Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql中rand函数使用">
-<meta name="twitter:description" content="需求是：从数据库中随机取出符合条件的几条数据; 可使用下面来随机获取5条数据 select * from table order by rand() limit 5  需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整体排序，数据量比较大的时候速度很慢。  经测试在50W条数据中随机取需要十几秒的时间。">
+<meta name="twitter:description" content="需求是：从数据库中随机取出符合条件的几条数据; 可使用下面来随机获取5条数据 select * from table order by rand() limit 5  需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为order by rand()会整体排序，数据量比较大的时候速度很慢。  经测试在50W条数据中随机取需要十几秒的时间。  数据量比较">
 
 
 
@@ -361,7 +361,20 @@
 <blockquote>
 <p>经测试在50W条数据中随机取需要十几秒的时间。</p>
 </blockquote>
+<h1 id="数据量比较大的优化方案"><a href="#数据量比较大的优化方案" class="headerlink" title="数据量比较大的优化方案"></a>数据量比较大的优化方案</h1><h2 id="优化方案1"><a href="#优化方案1" class="headerlink" title="优化方案1"></a>优化方案1</h2><pre><code>1. 取表id的最大值m、最小值n
+2. 计算随机 r= (m-n)*rand + n
+3. 取 id &gt;= r 的第一个值
+4. 重复2、3步，取需要的个数
 
+缺点 id不保证是连续的，所以这个方案并不是严格的随机。
+</code></pre><h2 id="优化方案2"><a href="#优化方案2" class="headerlink" title="优化方案2"></a>优化方案2</h2><pre><code>1. 取表的总行数 n
+2. 1-n 之间取随机数多个..... ,进行排序得到从小到大 r1、r2、r3.....
+3. `select * from table limit r1,1` 获取ID id1
+  `select * from table where id &gt; id1  limit r2,1` 获取ID id2
+  `select * from table where id &gt; id2  limit r3,1`
+
+相比o`rder by rand()` 减少了扫描行数并且不用数据库做排序操作
+</code></pre>
       
     </div>
     
@@ -457,8 +470,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -562,6 +584,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据量比较大的优化方案"><span class="nav-number">1.</span> <span class="nav-text">数据量比较大的优化方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优化方案1"><span class="nav-number">1.1.</span> <span class="nav-text">优化方案1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化方案2"><span class="nav-number">1.2.</span> <span class="nav-text">优化方案2</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

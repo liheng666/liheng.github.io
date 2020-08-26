@@ -123,7 +123,7 @@
       <title>mysql中rand函数使用</title>
       <link href="/2019/04/23/mysql%E4%B8%ADrand%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/"/>
       <url>/2019/04/23/mysql%E4%B8%ADrand%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8/</url>
-      <content type="html"><![CDATA[<p>需求是：从数据库中随机取出符合条件的几条数据;</p><p>可使用下面来随机获取5条数据</p><p><code>select * from table order by rand() limit 5</code> </p><p>需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为<code>order by rand()</code>会整体排序，数据量比较大的时候速度很慢。</p><blockquote><p>经测试在50W条数据中随机取需要十几秒的时间。</p></blockquote>]]></content>
+      <content type="html"><![CDATA[<p>需求是：从数据库中随机取出符合条件的几条数据;</p><p>可使用下面来随机获取5条数据</p><p><code>select * from table order by rand() limit 5</code> </p><p>需要注意： 这种方式只适合本身数据比较少或者通过where条件符约束后数据量很少的情况下使用，因为<code>order by rand()</code>会整体排序，数据量比较大的时候速度很慢。</p><blockquote><p>经测试在50W条数据中随机取需要十几秒的时间。</p></blockquote><h1 id="数据量比较大的优化方案"><a href="#数据量比较大的优化方案" class="headerlink" title="数据量比较大的优化方案"></a>数据量比较大的优化方案</h1><h2 id="优化方案1"><a href="#优化方案1" class="headerlink" title="优化方案1"></a>优化方案1</h2><pre><code>1. 取表id的最大值m、最小值n2. 计算随机 r= (m-n)*rand + n3. 取 id &gt;= r 的第一个值4. 重复2、3步，取需要的个数缺点 id不保证是连续的，所以这个方案并不是严格的随机。</code></pre><h2 id="优化方案2"><a href="#优化方案2" class="headerlink" title="优化方案2"></a>优化方案2</h2><pre><code>1. 取表的总行数 n2. 1-n 之间取随机数多个..... ,进行排序得到从小到大 r1、r2、r3.....3. `select * from table limit r1,1` 获取ID id1  `select * from table where id &gt; id1  limit r2,1` 获取ID id2  `select * from table where id &gt; id2  limit r3,1`相比o`rder by rand()` 减少了扫描行数并且不用数据库做排序操作</code></pre>]]></content>
       
       
         <tags>
